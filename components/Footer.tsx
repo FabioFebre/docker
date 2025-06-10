@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Footer() {
   return (
 <footer className="bg-white border-t border-gray-200 py-10 px-6 md:px-16">
@@ -13,9 +15,7 @@ export default function Footer() {
     <div>
       <p className="font-semibold text-black mb-2">Conócenos</p>
       <ul className="space-y-1">
-        <li>Descárgate la APP</li>
-        <li>Guía de tallas</li>
-        <li>Nosotros</li>
+        <li><Link href="/components/nosotros">Nosotros</Link></li>
       </ul>
     </div>
 
@@ -23,10 +23,7 @@ export default function Footer() {
     <div>
       <p className="font-semibold text-black mb-2">Atención al cliente</p>
       <ul className="space-y-1">
-        <li>Políticas</li>
         <li>Preguntas frecuentes</li>
-        <li>Seguimiento</li>
-        <li>Cambios</li>
       </ul>
     </div>
 
@@ -38,8 +35,6 @@ export default function Footer() {
         <li>Instagram: <a href="https://www.instagram.com/sgstudio.pe" className="link-faded" target="_blank" rel="noopener noreferrer">@sgstudio.pe</a></li>
         <li>Términos y condiciones</li>
         <li>Políticas de cambios</li>
-        <li>Síguenos en TikTok</li>
-        <li>Nuestras tiendas</li>
         <li>
           <img src="/images/libro-reclamaciones.png" alt="Libro de Reclamaciones" className="w-32 mt-2" />
         </li>
