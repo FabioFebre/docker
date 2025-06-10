@@ -4,29 +4,27 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function ProductoDetalle() {
-  const { id } = useParams();
-  const router = useRouter();
-  const [producto, setProducto] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  // Estado para productos recomendados
-  const [recomendados, setRecomendados] = useState([]);
+  const router = useRouter();
+  const [producto, setProducto] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null);
+  const [recomendados, setRecomendados] = useState<any[]>([]);
   const [loadingRec, setLoadingRec] = useState(true);
 
-  // Zoom
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [isHovering, setIsHovering] = useState(false);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.pageX - left - window.scrollX) / width) * 100;
     const y = ((e.pageY - top - window.scrollY) / height) * 100;
     setZoomPosition({ x, y });
   };
 
-  // Fetch producto actual
   useEffect(() => {
     async function fetchProducto() {
       try {
@@ -35,7 +33,7 @@ export default function ProductoDetalle() {
         const data = await res.json();
         setProducto(data);
         setImagenSeleccionada(data.imagen?.[0] || null);
-      } catch (error) {
+      } catch (error: any) {
         setError(error.message);
       } finally {
         setLoading(false);
@@ -44,16 +42,13 @@ export default function ProductoDetalle() {
     if (id) fetchProducto();
   }, [id]);
 
-  // Fetch productos y elegir aleatorios
   useEffect(() => {
     async function fetchRecomendados() {
       try {
         const res = await fetch('https://sg-studio-backend.onrender.com/productos');
         if (!res.ok) throw new Error('Error al obtener recomendados');
         const datos = await res.json();
-        // Filtrar para no incluir el producto actual
-        const otros = datos.filter(p => String(p.id) !== String(id));
-        // Barajar y tomar 4
+        const otros = datos.filter((p: any) => String(p.id) !== String(id));
         const shuffled = otros.sort(() => 0.5 - Math.random());
         setRecomendados(shuffled.slice(0, 4));
       } catch (err) {
@@ -65,25 +60,54 @@ export default function ProductoDetalle() {
     if (!loading) fetchRecomendados();
   }, [loading, id]);
 
+  const handleAgregarAlCarrito = async () => {
+    const usuarioStr = typeof window !== 'undefined' ? localStorage.getItem('usuario') : null;
+    const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
+    const userId = usuario?.id;
+
+    if (!userId) {
+      alert('Debe iniciar sesión para agregar productos al carrito');
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const res = await fetch('https://sg-studio-backend.onrender.com/carrito/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuarioId: userId,
+          productoId: producto.id,
+          cantidad: 1,
+          talla: 'M',
+          color: producto.color || 'negro',
+        }),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Error al agregar al carrito: ${errorText}`);
+      }
+
+      alert('Producto agregado al carrito');
+    } catch (err) {
+      console.error(err);
+      alert('Hubo un error al agregar al carrito');
+    }
+  };
+
   if (loading) return <p className="p-12 text-center">Cargando producto...</p>;
   if (error) return <p className="p-12 text-center text-red-600">{error}</p>;
   if (!producto) return <p className="p-12 text-center">Producto no encontrado</p>;
 
-  const {
-    nombre,
-    descripcion,
-    precio,
-    imagen = [],
-    color,
-  } = producto;
+  const { nombre, descripcion, precio, imagen = [], color } = producto;
 
   return (
     <div className="bg-white min-h-screen px-6 md:px-12 pt-24 md:pt-32 pb-12">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[auto_500px_1fr] gap-6">
-
         {/* Miniaturas */}
         <div className="flex flex-row md:flex-col gap-3 items-center md:items-start">
-          {imagen.map((img, index) => (
+          {imagen.map((img: string, index: number) => (
             <button
               key={index}
               onClick={() => setImagenSeleccionada(img)}
@@ -102,7 +126,7 @@ export default function ProductoDetalle() {
           ))}
         </div>
 
-        {/* Imagen principal con lupa */}
+        {/* Imagen principal con zoom */}
         <div
           className="relative w-full h-[800px] shadow-md rounded-lg overflow-hidden flex items-center justify-center bg-gray-100"
           style={{ cursor: isHovering ? 'zoom-in' : 'default' }}
@@ -133,6 +157,7 @@ export default function ProductoDetalle() {
           <hr />
           <h5 className="text-sm">{color}</h5>
           <button
+            onClick={handleAgregarAlCarrito}
             className="btn-animated w-full text-sm"
             style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
           >
@@ -142,14 +167,14 @@ export default function ProductoDetalle() {
         </div>
       </div>
 
-      {/* Sección Te puede interesar */}
+      {/* Recomendados */}
       <div className="max-w-6xl mx-auto mt-16">
         <h5 className="text-2xl mb-4 text-black">Te puede interesar</h5>
         {loadingRec ? (
           <p>Cargando recomendaciones...</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {recomendados.map(item => (
+            {recomendados.map((item: any) => (
               <div
                 key={item.id}
                 className="cursor-pointer hover:shadow-lg transition p-4 border rounded"

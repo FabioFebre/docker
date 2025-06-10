@@ -1,11 +1,26 @@
 'use client';
+
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { FaUser, FaSearch, FaShoppingBag, FaTimes } from 'react-icons/fa';
 
 export default function Navbar() {
   const [showCart, setShowCart] = useState(false);
+  const [categorias, setCategorias] = useState([]);
   const cartRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const res = await fetch('https://sg-studio-backend.onrender.com/categorias');
+        const data = await res.json();
+        setCategorias(data);
+      } catch (error) {
+        console.error('Error al cargar categorías:', error);
+      }
+    };
+    fetchCategorias();
+  }, []);
 
   useEffect(() => {
     const handleClickOutsideCart = (event: MouseEvent) => {
@@ -32,31 +47,23 @@ export default function Navbar() {
           <ul className="flex gap-6 text-sm font-medium">
             <li className="relative group">
               <Link href="/woman" className="underline-hover">WOMAN</Link>
-              <div
-                className="absolute left-0 top-full mt-0 w-64 bg-white shadow-lg p-4 border text-sm z-30 hidden group-hover:block
-                           before:content-[''] before:absolute before:top-0 before:left-0 before:h-[3px] before:bg-pink-500
-                           before:w-0 before:origin-left before:transition-all before:duration-500 before:ease-in-out
-                           group-hover:before:w-full"
-              >
+              <div className="absolute left-0 top-full mt-0 w-64 bg-white shadow-lg p-4 hidden group-hover:block border text-sm z-30">
                 <ul className="space-y-1 text-black">
-                  <li><Link href="/ropa/tops" className="block hover:text-pink-500">Tops</Link></li>
-                  <li><Link href="/ropa/polos" className="block hover:text-pink-500">Polos</Link></li>
-                  <li><Link href="/ropa/blusas" className="block hover:text-pink-500">Blusas</Link></li>
-                  <li><Link href="/ropa/bodies" className="block hover:text-pink-500">Bodies</Link></li>
-                  <li><Link href="/ropa/vestidos" className="block hover:text-pink-500">Vestidos</Link></li>
-                  <li><Link href="/ropa/abrigos" className="block hover:text-pink-500">Abrigos, blazers</Link></li>
-                  <li><Link href="/ropa/pantalones" className="block hover:text-pink-500">Pantalones</Link></li>
-                  <li><Link href="/ropa/denim" className="block hover:text-pink-500">Denim</Link></li>
-                  <li><Link href="/ropa/faldas" className="block hover:text-pink-500">Faldas</Link></li>
-                  <li><Link href="/ropa/shorts" className="block hover:text-pink-500">Short</Link></li>
+                  {categorias.length > 0 ? (
+                    categorias.map((cat) => (
+                      <li key={cat.id}>
+                        <Link href={`/woman?categoria=${encodeURIComponent(cat.nombre)}`}>
+                          {cat.nombre}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">Cargando...</li>
+                  )}
                 </ul>
               </div>
             </li>
-            <li><Link href="/new" className="underline-hover">NEW ARRIVALS</Link></li>
-            <li><Link href="/top" className="underline-hover">TOP SELLERS</Link></li>
-            <li><Link href="/basics" className="underline-hover">BASICS</Link></li>
-            <li><Link href="/last" className="underline-hover">LAST UNITS</Link></li>
-            <li><Link href="/todo" className="underline-hover">VER TODO</Link></li>
+       
           </ul>
 
           <div className="flex gap-4 text-xl">

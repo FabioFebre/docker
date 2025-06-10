@@ -3,12 +3,18 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 export default function WomanPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const categoriaSeleccionada = searchParams.get('categoria') || ''
+  const precioMaxParam = searchParams.get('precioMax')
   const [productos, setProductos] = useState([])
   const [categorias, setCategorias] = useState([])
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('')
-  const [precioMax, setPrecioMax] = useState(100)
+
+  const precioMax = Number(precioMaxParam) || 100
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +39,13 @@ export default function WomanPage() {
     Array.isArray(p.imagen) && p.imagen.length > 0
   )
 
+  const handlePrecioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nuevoPrecio = Number(e.target.value)
+    const query = new URLSearchParams(searchParams.toString())
+    query.set('precioMax', nuevoPrecio.toString())
+    router.push(`/woman?${query.toString()}`)
+  }
+
   return (
     <main className="bg-white min-h-screen p-4 pt-24 flex">
       {/* Filtros a la izquierda */}
@@ -40,21 +53,21 @@ export default function WomanPage() {
         <h2 className="text-lg font-bold mb-4 text-black">Categorías</h2>
         <ul className="space-y-2 mb-6">
           <li>
-            <button
-              onClick={() => setCategoriaSeleccionada('')}
-              className={`text-left w-full ${!categoriaSeleccionada ? 'font-bold text-black' : 'text-gray-600'}`}
+            <Link
+              href={`/woman?precioMax=${precioMax}`}
+              className={`block text-left w-full ${!categoriaSeleccionada ? 'font-bold text-black' : 'text-gray-600'}`}
             >
               Todas
-            </button>
+            </Link>
           </li>
           {categorias.map((cat: any) => (
             <li key={cat.id}>
-              <button
-                onClick={() => setCategoriaSeleccionada(cat.nombre)}
-                className={`text-left w-full ${categoriaSeleccionada === cat.nombre ? 'font-bold text-black' : 'text-gray-600'}`}
+              <Link
+                href={`/woman?categoria=${encodeURIComponent(cat.nombre)}&precioMax=${precioMax}`}
+                className={`block text-left w-full ${categoriaSeleccionada === cat.nombre ? 'font-bold text-black' : 'text-gray-600'}`}
               >
                 {cat.nombre}
-              </button>
+              </Link>
             </li>
           ))}
         </ul>
@@ -66,7 +79,7 @@ export default function WomanPage() {
           max="100"
           step="1"
           value={precioMax}
-          onChange={(e) => setPrecioMax(Number(e.target.value))}
+          onChange={handlePrecioChange}
           className="w-full"
         />
       </aside>

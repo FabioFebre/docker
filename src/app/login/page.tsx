@@ -25,14 +25,14 @@ export default function LoginPage() {
       if (response.ok && data.usuario) {
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('role', data.usuario.rol); // 👈 Guardar el rol
+        localStorage.setItem('role', data.usuario.rol); 
 
         setMensaje('');
 
         if (data.usuario.rol === 'admin') {
           router.push('/admin/dashboard');
         } else {
-          router.push('/usuario');
+          router.push('/');
         }
 
       } else {

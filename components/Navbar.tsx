@@ -1,12 +1,26 @@
 'use client';
+
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { FaUser, FaSearch, FaShoppingBag, FaTimes } from 'react-icons/fa';
 
 type Categoria = {
   id: number;
   nombre: string;
   slug?: string;
+};
+
+type ProductoCarrito = {
+  id: number;
+  talla: string;
+  color: string;
+  cantidad: number;
+  producto: {
+    nombre: string;
+    imagen: string[];
+    precio: number;
+  };
 };
 
 export default function Navbar() {
@@ -16,9 +30,11 @@ export default function Navbar() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCart, setShowCart] = useState(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [carrito, setCarrito] = useState<ProductoCarrito[]>([]);
   const searchRef = useRef(null);
   const buttonRef = useRef(null);
   const cartRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -36,9 +52,41 @@ export default function Navbar() {
         console.error('Error al cargar las categorías:', error);
       }
     };
-
     fetchCategorias();
   }, []);
+
+  useEffect(() => {
+    const fetchCarrito = async () => {
+      const storedUser = localStorage.getItem('usuario');
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+      if (isLoggedIn && storedUser) {
+        const user = JSON.parse(storedUser);
+        try {
+          const response = await fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}`);
+          if (!response.ok) throw new Error('No se pudo obtener el carrito');
+          const data = await response.json();
+          setCarrito(data.items);
+        } catch (error) {
+          console.error('Error al obtener carrito del backend:', error);
+        }
+      } else {
+        const savedCart = localStorage.getItem('carrito');
+        if (savedCart) {
+          setCarrito(JSON.parse(savedCart));
+        }
+      }
+    };
+
+    fetchCarrito();
+  }, []);
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (!isLoggedIn) {
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+    }
+  }, [carrito]);
 
   useEffect(() => {
     const handleClickOutsideSearch = (event: MouseEvent) => {
@@ -53,8 +101,6 @@ export default function Navbar() {
     };
     if (showSearch) {
       document.addEventListener('mousedown', handleClickOutsideSearch);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutsideSearch);
     }
     return () => document.removeEventListener('mousedown', handleClickOutsideSearch);
   }, [showSearch]);
@@ -67,8 +113,6 @@ export default function Navbar() {
     };
     if (showCart) {
       document.addEventListener('mousedown', handleClickOutsideCart);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutsideCart);
     }
     return () => document.removeEventListener('mousedown', handleClickOutsideCart);
   }, [showCart]);
@@ -78,6 +122,20 @@ export default function Navbar() {
     : 'bg-transparent text-white border-b border-transparent';
 
   const clearSearch = () => setSearchTerm('');
+
+  const handleUserClick = () => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const role = localStorage.getItem('role');
+    if (isLoggedIn === 'true') {
+      if (role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/usuario/perfil');
+      }
+    } else {
+      router.push('/login');
+    }
+  };
 
   return (
     <>
@@ -99,7 +157,7 @@ export default function Navbar() {
                   {categorias.length > 0 ? (
                     categorias.map((cat) => (
                       <li key={cat.id}>
-                        <Link href={`/ropa/${cat.slug}`}>
+                        <Link href={`/woman?categoria=${encodeURIComponent(cat.nombre)}`}>
                           {cat.nombre}
                         </Link>
                       </li>
@@ -110,31 +168,22 @@ export default function Navbar() {
                 </ul>
               </div>
             </li>
-            <li><Link href="/new">NEW ARRIVALS</Link></li>
-            <li><Link href="/top">TOP SELLERS</Link></li>
-            <li><Link href="/basics">BASICS</Link></li>
-            <li><Link href="/last">LAST UNITS</Link></li>
-            <li><Link href="/todo">VER TODO</Link></li>
           </ul>
 
           <div className="flex gap-4 text-xl">
-            <Link href="/login"><FaUser className="hover:text-pink-500" /></Link>
-            <button
-              ref={buttonRef}
-              onClick={() => setShowSearch((prev) => !prev)}
-              aria-label="Buscar"
-              className="hover:text-pink-500 focus:outline-none"
-              type="button"
-            >
+            <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-pink-500">
+              <FaUser />
+            </button>
+            <button ref={buttonRef} onClick={() => setShowSearch(!showSearch)} aria-label="Buscar" className="hover:text-pink-500">
               <FaSearch />
             </button>
-            <button
-              onClick={() => setShowCart(true)}
-              aria-label="Carrito"
-              className="hover:text-pink-500 focus:outline-none"
-              type="button"
-            >
+            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-pink-500 relative">
               <FaShoppingBag />
+              {carrito.length > 0 && (
+                <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {carrito.length}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -155,12 +204,7 @@ export default function Navbar() {
             autoFocus
           />
           {searchTerm && (
-            <button
-              type="button"
-              onClick={clearSearch}
-              aria-label="Limpiar búsqueda"
-              className="text-gray-500 hover:text-gray-700 ml-3"
-            >
+            <button onClick={clearSearch} aria-label="Limpiar búsqueda" className="text-gray-500 hover:text-gray-700 ml-3">
               <FaTimes size={20} />
             </button>
           )}
@@ -169,9 +213,7 @@ export default function Navbar() {
 
       <div
         ref={cartRef}
-        className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${
-          showCart ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-lg font-bold text-black">Tu carrito</h2>
@@ -179,8 +221,27 @@ export default function Navbar() {
             <FaTimes className="text-black" />
           </button>
         </div>
-        <div className="p-6">
-          <p className="text-black">Tu carrito está vacío.</p>
+
+        <div className="p-6 space-y-4 overflow-y-auto h-[calc(100%-80px)]">
+          {carrito.length === 0 ? (
+            <p className="text-black">Tu carrito está vacío.</p>
+          ) : (
+            carrito.map((item) => (
+              <div key={item.id} className="flex gap-4 items-center border-b pb-4">
+                <img
+                  src={item.producto.imagen[0]}
+                  alt={item.producto.nombre}
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-black">{item.producto.nombre}</span>
+                  <span className="text-xs text-gray-600">Talla: {item.talla} | Color: {item.color}</span>
+                  <span className="text-xs text-gray-600">Cantidad: {item.cantidad}</span>
+                  <span className="text-sm text-gray-800 font-bold">PEN {item.producto.precio}</span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </>

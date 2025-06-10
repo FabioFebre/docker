@@ -40,17 +40,17 @@ const Nosotros = () => {
               avenidas principales y transporte público.
             </p>
             <p className="text-gray-700 mb-2">
-              <strong>Dirección:</strong> Av. Caminos del Inca 1234, Surco - Lima, Perú
+              <strong>Dirección:</strong> Jr. Pizarro 818, Int. 117 - Centro Comercial Plaza Pizarro
             </p>
             <p className="text-gray-700">
-              <strong>Horario:</strong> Lunes a Sábado de 10:00 am a 8:00 pm
+              <strong>Horario:</strong> Lunes a Sábado de 10:30 am - 8:30 pm
             </p>
           </div>
 
           {/* Mapa */}
           <div className="w-full">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.98116737663!2d-76.97714428480752!3d-12.129663845972023!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c6edabcde4b1%3A0xabcdef1234567890!2sAv.%20Caminos%20del%20Inca%201234%2C%20Santiago%20de%20Surco%2015023!5e0!3m2!1ses-419!2spe!4v1650552479531!5m2!1ses-419!2spe"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.832214874465!2d-79.0252573!3d-8.1082803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91ad3dac7097f493%3A0x5f15557368ecd96c!2sGaler%C3%ADa%20Plaza%20Pizarro!5e0!3m2!1ses!2spe!4v1717931300000!5m2!1ses!2spe" 
               width="100%"
               height="450"
               loading="lazy"

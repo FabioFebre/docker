@@ -35,8 +35,7 @@ export default function Footer() {
       <p className="text-black font-medium mb-2">Linkear nuestras<br />redes sociales para<br />que nos sigan.</p>
       <p className="text-xs uppercase font-semibold text-gray-500 mt-4 mb-2">Páginas de interés</p>
       <ul className="space-y-1">
-        <li>Instagram: @</li>
-        <li>Instagram: @</li>
+        <li>Instagram: <a href="https://www.instagram.com/sgstudio.pe" className="link-faded" target="_blank" rel="noopener noreferrer">@sgstudio.pe</a></li>
         <li>Términos y condiciones</li>
         <li>Políticas de cambios</li>
         <li>Síguenos en TikTok</li>
