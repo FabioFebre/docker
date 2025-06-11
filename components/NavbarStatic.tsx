@@ -163,12 +163,14 @@ export default function Navbar() {
             </button>
             <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-pink-500 relative">
               <FaShoppingBag />
-              {carrito.length > 0 && (
+              {Array.isArray(carrito) && carrito.length > 0 && (
                 <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {carrito.length}
                 </span>
               )}
             </button>
+
+           
           </div>
         </div>
       </nav>

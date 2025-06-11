@@ -7,6 +7,8 @@ export default function RegistroPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [apellido, setApellido] = useState('');
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ export default function RegistroPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nombre,
-          apellido: '', // si quieres agregar campo apellido más adelante
+          apellido, 
           email,
           password,
         }),
@@ -30,7 +32,7 @@ export default function RegistroPage() {
         setNombre('');
         setEmail('');
         setPassword('');
-        // Puedes redirigir con router.push('/login') si usas next/navigation
+        setApellido('');
       } else {
         setMensaje(` ${data.error || 'Error al registrar'}`);
       }
@@ -53,20 +55,33 @@ export default function RegistroPage() {
             <input
               type="text"
               id="name"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="Tu nombre"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
             />
           </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1" htmlFor="apellido">Apellido</label>
+            <input
+              type="text"
+              id="apellido"
+              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+              placeholder="Tu apellido"
+              value={apellido}
+              onChange={(e) => setApellido(e.target.value)}
+              required
+            />
+          </div>
+
 
           <div>
             <label className="block text-sm text-gray-700 mb-1" htmlFor="email">Correo electrónico</label>
             <input
               type="email"
               id="email"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="correo@ejemplo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -79,7 +94,7 @@ export default function RegistroPage() {
             <input
               type="password"
               id="password"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
