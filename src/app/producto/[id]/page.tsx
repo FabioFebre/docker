@@ -1,14 +1,16 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function ProductoDetalle() {
   const params = useParams();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const initialId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const router = useRouter();
   const [producto, setProducto] = useState<any>(null);
+  const [idActual, setIdActual] = useState(initialId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null);
@@ -25,22 +27,24 @@ export default function ProductoDetalle() {
     setZoomPosition({ x, y });
   };
 
-  useEffect(() => {
-    async function fetchProducto() {
-      try {
-        const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${id}`);
-        if (!res.ok) throw new Error('Error al obtener el producto');
-        const data = await res.json();
-        setProducto(data);
-        setImagenSeleccionada(data.imagen?.[0] || null);
-      } catch (error: any) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
+  const fetchProducto = async (id: string | number) => {
+    try {
+      setLoading(true);
+      const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${id}`);
+      if (!res.ok) throw new Error('Error al obtener el producto');
+      const data = await res.json();
+      setProducto(data);
+      setImagenSeleccionada(data.imagen?.[0] || null);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    if (id) fetchProducto();
-  }, [id]);
+  };
+
+  useEffect(() => {
+    if (idActual) fetchProducto(idActual);
+  }, [idActual]);
 
   useEffect(() => {
     async function fetchRecomendados() {
@@ -48,7 +52,7 @@ export default function ProductoDetalle() {
         const res = await fetch('https://sg-studio-backend.onrender.com/productos');
         if (!res.ok) throw new Error('Error al obtener recomendados');
         const datos = await res.json();
-        const otros = datos.filter((p: any) => String(p.id) !== String(id));
+        const otros = datos.filter((p: any) => String(p.id) !== String(idActual));
         const shuffled = otros.sort(() => 0.5 - Math.random());
         setRecomendados(shuffled.slice(0, 4));
       } catch (err) {
@@ -58,7 +62,7 @@ export default function ProductoDetalle() {
       }
     }
     if (!loading) fetchRecomendados();
-  }, [loading, id]);
+  }, [loading, idActual]);
 
   const handleAgregarAlCarrito = async () => {
     const usuarioStr = typeof window !== 'undefined' ? localStorage.getItem('usuario') : null;
@@ -178,7 +182,10 @@ export default function ProductoDetalle() {
               <div
                 key={item.id}
                 className="cursor-pointer hover:shadow-lg transition p-4 border rounded"
-                onClick={() => router.push(`/productos/${item.id}`)}
+                onClick={() => {
+                  setIdActual(String(item.id));
+                  router.push(`/producto/${item.id}`);
+                }}
               >
                 <div className="w-full h-48 relative">
                   {item.imagen?.[0] && (

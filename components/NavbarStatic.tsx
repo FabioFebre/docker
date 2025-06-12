@@ -125,6 +125,25 @@ export default function Navbar() {
     }
   };
 
+  const aumentarCantidad = (id: number) => {
+    setCarrito((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, cantidad: item.cantidad + 1 } : item
+      )
+    );
+  };
+
+  const disminuirCantidad = (id: number) => {
+    setCarrito((prev) =>
+      prev.map((item) =>
+        item.id === id && item.cantidad > 1
+          ? { ...item, cantidad: item.cantidad - 1 }
+          : item
+      )
+    );
+  };
+
+
   return (
     <>
       <nav className="fixed top-0 left-0 w-full z-50 px-8 py-4 bg-white text-black shadow-md border-b border-gray-300">
@@ -164,11 +183,13 @@ export default function Navbar() {
             <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-pink-500 relative">
               <FaShoppingBag />
               {Array.isArray(carrito) && carrito.length > 0 && (
-                <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {carrito.length}
+                <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {carrito.reduce((total, item) => total + item.cantidad, 0)}
                 </span>
               )}
+              
             </button>
+
 
            
           </div>
