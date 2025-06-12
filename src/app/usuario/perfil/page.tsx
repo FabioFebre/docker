@@ -38,7 +38,7 @@ export default function PerfilUsuario() {
     if (storedUser && isLoggedIn === 'true') {
       setUsuario(JSON.parse(storedUser));
     } else {
-      router.push('/login'); // Redirige si no está autenticado
+      router.push('/login');
     }
   }, [router]);
 
@@ -48,7 +48,7 @@ export default function PerfilUsuario() {
       try {
         const res = await fetch(`https://sg-studio-backend.onrender.com/carrito/${usuario.id}`);
         const data = await res.json();
-        setCarrito(data.items); // ✅ Extrae solo los items del carrito
+        setCarrito(data.items);
       } catch (err) {
         console.error(err);
       } finally {
@@ -67,74 +67,61 @@ export default function PerfilUsuario() {
   };
 
   if (!usuario) {
-    return <p className="text-center mt-10">Cargando datos del usuario...</p>;
+    return <p className="text-center mt-10 text-gray-600">Cargando datos del usuario...</p>;
   }
 
   return (
-    <section className="min-h-screen pt-24 px-6 bg-white text-black">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Encabezado y botón de logout */}
-        <div className="flex justify-between items-center border-b pb-4">
-          <h1 className="text-3xl font-bold">Cuenta</h1>
+    <section className="min-h-screen pt-24 px-4 md:px-8 bg-white text-black">
+      <div className="max-w-5xl mx-auto space-y-10">
+        {/* Encabezado */}
+        <div className="flex justify-between items-center border-b border-gray-300 pb-6">
+          <h1 className="text-3xl font-bold tracking-tight uppercase">Mi cuenta</h1>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-red-500"
+            className="text-sm font-medium border border-black px-4 py-1.5 rounded hover:bg-black hover:text-white transition"
           >
-            <svg
-              aria-hidden="true"
-              width="10"
-              height="10"
-              fill="none"
-              viewBox="0 0 10 10"
-              className="transform rotate-180"
-            >
-              <path
-                d="M7 1L3 5l4 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
             Cerrar sesión
           </button>
         </div>
 
-        {/* Introducción */}
-        <div className="prose max-w-none text-gray-700">
-          <p>Aquí puedes ver todos tus pedidos y gestionar la información de tu cuenta.</p>
+        {/* Bienvenida */}
+        <div>
+          <p className="text-gray-700 text-lg">
+            ¡Hola <span className="font-semibold">{usuario.nombre}</span>! Aquí puedes gestionar tu
+            cuenta y ver tus productos en el carrito.
+          </p>
         </div>
 
-        {/* Sección de carrito */}
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-gray-800">Productos en tu carrito</h2>
+        {/* Carrito */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold uppercase">Carrito de compras</h2>
           {loadingCarrito ? (
-            <p className="text-gray-500">Cargando productos del carrito...</p>
+            <p className="text-gray-500">Cargando productos...</p>
           ) : carrito.length === 0 ? (
             <>
-              <p className="text-gray-600">Aún no has agregado productos al carrito.</p>
+              <p className="text-gray-600">Tu carrito está vacío.</p>
               <a
                 href="/"
-                className="inline-block mt-2 px-4 py-2 bg-black text-white text-sm rounded hover:bg-gray-800"
+                className="inline-block mt-2 px-4 py-2 border border-black rounded hover:bg-black hover:text-white transition text-sm"
               >
                 Seguir comprando
               </a>
             </>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-6 md:grid-cols-2">
               {carrito.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-4 border p-4 rounded hover:shadow-md"
+                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition"
                 >
                   <img
                     src={item.producto.imagen[0]}
                     alt={item.producto.nombre}
-                    className="w-20 h-20 object-cover rounded"
+                    className="w-24 h-24 object-cover rounded-md"
                   />
-                  <div>
-                    <h3 className="font-semibold">{item.producto.nombre}</h3>
-                    <p className="text-sm text-gray-600">PEN {item.producto.precio}</p>
+                  <div className="flex-1 space-y-1">
+                    <h3 className="text-lg font-semibold">{item.producto.nombre}</h3>
+                    <p className="text-sm text-gray-700">PEN {item.producto.precio}</p>
                     <p className="text-sm text-gray-500">
                       Talla: {item.talla} | Color: {item.color}
                     </p>
@@ -147,12 +134,12 @@ export default function PerfilUsuario() {
         </div>
 
         {/* Información del usuario */}
-        <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">Información de la cuenta</h2>
-          <ul className="text-sm text-gray-700 space-y-1">
-            <li><strong>Nombre:</strong> {usuario.nombre}</li>
-            <li><strong>Email:</strong> {usuario.email}</li>
-          </ul>
+        <div className="border-t border-gray-300 pt-6">
+          <h2 className="text-xl font-semibold uppercase mb-4">Información de la cuenta</h2>
+          <div className="space-y-2 text-sm text-gray-800">
+            <p><strong>Nombre:</strong> {usuario.nombre}</p>
+            <p><strong>Email:</strong> {usuario.email}</p>
+          </div>
         </div>
       </div>
     </section>

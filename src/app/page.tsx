@@ -51,13 +51,11 @@ export default function Home() {
   const [showSplash, setShowSplash] = useState(true)
   const [fadeSplash, setFadeSplash] = useState(false)
 
-  // 1) Empieza fade-out tras 1s
   useEffect(() => {
     const t1 = setTimeout(() => setFadeSplash(true), 1000)
     return () => clearTimeout(t1)
   }, [])
 
-  // 2) Fetch productos
   useEffect(() => {
     async function fetchProductos() {
       try {
@@ -74,7 +72,6 @@ export default function Home() {
     fetchProductos()
   }, [])
 
-  // 3) Oculta splash cuando ya no cargue y haya hecho fade
   useEffect(() => {
     if (!loading && fadeSplash) {
       const t2 = setTimeout(() => setShowSplash(false), 500)
@@ -82,7 +79,6 @@ export default function Home() {
     }
   }, [loading, fadeSplash])
 
-  // Paginación
   const items = productos.filter(p => Array.isArray(p.imagen) && p.imagen.length > 0)
   const perPage = 4
   const pageCount = Math.ceil(items.length / perPage)
@@ -93,15 +89,12 @@ export default function Home() {
 
   return (
     <div className="relative">
-      {/* MAIN: siempre está debajo de la splash */}
       <main className={`transition-filter duration-700 ${showSplash ? 'filter blur-sm pointer-events-none' : ''}`}>
         <Slideshow slides={slides} />
 
-        {/* Estado de error o carga */}
         {error && <p className="p-12 text-center text-red-600">{error}</p>}
         {!error && loading && <p className="p-12 text-center text-lg">Cargando productos...</p>}
 
-        {/* Sólo mostramos productos cuando ya cargó */}
         {!loading && !error && (
           <>
             <section className="py-8 bg-white">
