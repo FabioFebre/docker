@@ -99,7 +99,7 @@ export default function Home() {
           <>
             <section className="py-8 bg-white">
               <div className="flex justify-between items-center px-4 mb-4">
-                <h2 className="text-lg font-bold text-gray-800">Novedades</h2>
+                <h2 className=" font-[Beige] text-lg font-bold text-gray-800">Novedades</h2>
                 <div className="flex space-x-2">
                   <button
                     onClick={prevPage}
@@ -165,7 +165,7 @@ export default function Home() {
                   />
                 </picture>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-center">
-                  <h2 className="text-2xl md:text-4xl font-bold drop-shadow-lg">
+                  <h2 className=" font-[Beige] text-2xl md:text-4xl font-bold drop-shadow-lg">
                     Visítanos en nuestras tiendas
                   </h2>
                 </div>

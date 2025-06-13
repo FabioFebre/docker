@@ -106,3 +106,15 @@ body {
   padding-left: 100%; /* para comenzar fuera de pantalla */
   animation: scroll-text 15s linear infinite;
 }
+@font-face {
+  font-family: 'Beige';
+  src: url('/public/fonts/Beige_Culture_Regular.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/public/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

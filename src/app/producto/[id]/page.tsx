@@ -156,18 +156,17 @@ export default function ProductoDetalle() {
 
         {/* Detalles */}
         <div className="space-y-4 text-gray-800">
-          <h1 className="text-4xl mb-1">{nombre}</h1>
-          <p className="text-2xl text-black-700">PEN {precio}</p>
+          <h1 className="font-[Beige] text-6xl mb-1">{nombre}</h1>
+          <p className="font-[Beige] text-2xl text-black-700">PEN {precio}</p>
           <hr />
-          <h5 className="text-sm">{color}</h5>
+          <h5 className="font-[Montserrat] text-sm">{color}</h5>
           <button
             onClick={handleAgregarAlCarrito}
-            className="btn-animated w-full text-sm"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+            className="font-[Montserrat] btn-animated w-full text-sm"
           >
             Añadir al carrito
           </button>
-          <p className="text-gray-600 text-sm truncate">{descripcion}</p>
+          <p className="font-[Montserrat] text-gray-600 text-sm truncate">{descripcion}</p>
         </div>
       </div>
 

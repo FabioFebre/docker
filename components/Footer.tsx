@@ -31,10 +31,8 @@ export default function Footer() {
       </ul>
     </div>
 
-    {/* Redes sociales y páginas de interés */}
     <div>
-      <p className="text-black font-medium mb-2">Linkear nuestras<br />redes sociales para<br />que nos sigan.</p>
-      <p className="text-xs uppercase font-semibold text-gray-500 mt-4 mb-2">Páginas de interés</p>
+      <p className="text-xs uppercase font-semibold text-black mb-2">Páginas de interés</p>
       <ul className="space-y-1">
         <a href="https://www.instagram.com/sgstudio.pe" className="link-faded hover:underline" target="_blank" rel="noopener noreferrer">
           Instagram: @sgstudio.pe

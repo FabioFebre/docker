@@ -48,14 +48,13 @@ export default function WomanPage() {
 
   return (
     <main className="bg-white min-h-screen p-4 pt-24 flex">
-      {/* Filtros a la izquierda */}
       <aside className="w-64 pr-6 border-r border-gray-300">
-        <h2 className="text-lg font-bold mb-4 text-black">Categorías</h2>
+        <h2 className="font-[Beige] text-2xl font-bold mb-4 text-black">Categorías</h2>
         <ul className="space-y-2 mb-6">
           <li>
             <Link
               href={`/woman?precioMax=${precioMax}`}
-              className={`block text-left w-full ${!categoriaSeleccionada ? 'font-bold text-black' : 'text-gray-600'}`}
+              className={`font-[Beige] block text-left w-full ${!categoriaSeleccionada ? 'font-bold text-black' : 'text-gray-600'}`}
             >
               Todas
             </Link>
@@ -64,7 +63,7 @@ export default function WomanPage() {
             <li key={cat.id}>
               <Link
                 href={`/woman?categoria=${encodeURIComponent(cat.nombre)}&precioMax=${precioMax}`}
-                className={`block text-left w-full ${categoriaSeleccionada === cat.nombre ? 'font-bold text-black' : 'text-gray-600'}`}
+                className={`font-[Montserrat] block text-sm	text-left w-full ${categoriaSeleccionada === cat.nombre ? 'font-bold text-black' : 'text-gray-600'}`}
               >
                 {cat.nombre}
               </Link>
@@ -72,7 +71,7 @@ export default function WomanPage() {
           ))}
         </ul>
 
-        <h2 className="text-lg font-bold mb-2 text-black">Precio Máximo: ${precioMax}</h2>
+        <h2 className="font-[Beige] text-lg font-bold mb-2 text-black">Precio Máximo:{precioMax} PEN</h2>
         <input
           type="range"
           min="0"
@@ -80,13 +79,13 @@ export default function WomanPage() {
           step="1"
           value={precioMax}
           onChange={handlePrecioChange}
-          className="w-full"
-        />
+          className="w-full appearance-none bg-gray-200 rounded h-2 transition-all duration-300 ease-in-out accent-black"
+          />
       </aside>
 
       {/* Productos a la derecha */}
       <section className="flex-1 pl-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Prendas</h2>
+        <h2 className="font-[Beige] text-2xl font-bold mb-4 text-gray-800">Prendas</h2>
         {productosFiltrados.length === 0 ? (
           <p className="text-gray-500">No hay productos que coincidan con los filtros.</p>
         ) : (

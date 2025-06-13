@@ -220,7 +220,7 @@ export default function Navbar() {
         className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-lg font-bold text-black">Tu carrito</h2>
+          <h2 className=" font-[Beige] text-lg font-bold text-black">Tu carrito</h2>
           <button onClick={() => setShowCart(false)} aria-label="Cerrar">
             <FaTimes className="text-black" />
           </button>
@@ -228,7 +228,7 @@ export default function Navbar() {
 
         <div className="p-6 space-y-4 overflow-y-auto h-[calc(100%-80px)]">
           {carrito.length === 0 ? (
-            <p className="text-black">Tu carrito está vacío.</p>
+            <p className="font-[Montserrat] text-black">Tu carrito está vacío.</p>
           ) : (
             carrito.map((item) => (
               <div key={item.id} className="flex gap-4 items-center border-b pb-4">

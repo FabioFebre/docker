@@ -149,16 +149,24 @@ export default function Navbar() {
           <Link href="/" className="text-2xl font-bold text-black hover:opacity-80">
             SG STUDIO
           </Link>
-          <ul className="flex gap-6 text-sm font-medium text-black">
+          <ul className="flex gap-6  mt-3 text-sm font-medium text-black">
             <li className="relative group">
-              <Link href="/woman" className="underline-hover">
+              <Link href="/woman" className="font-[Beige] underline-hover">
                 WOMAN
               </Link>
-              <div className="absolute left-0 top-full mt-0 w-64 bg-white shadow-lg p-4 hidden group-hover:block border text-sm">
-                <ul className="space-y-1 text-black">
-                  {categorias.map(c => (
-                    <li key={c.id}>
-                      <Link href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}>
+                 <div className="absolute left-0 top-full w-64 bg-white shadow-lg p-4 border text-sm z-10
+                  opacity-0 pointer-events-none transition-opacity duration-300 ease-out
+                  group-hover:opacity-100 group-hover:pointer-events-auto">
+
+                  <ul className="font-[Beige] space-y-5 text-black">
+                  {categorias.map((c, i) => (
+                    <li key={c.id}
+                    className={`transition duration-300 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+                    style={{ transitionDelay: `${i * 50}ms` }}
+                              >
+                      <Link href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}
+                                  className="block text-black hover:text-gray-700 transition-colors"
+                                  >
                         {c.nombre}
                       </Link>
                     </li>
@@ -247,14 +255,14 @@ export default function Navbar() {
         }`}
       >
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-bold text-black">Tu carrito</h2>
+          <h2 className=" font-[Beige] text-lg font-bold text-black">Tu carrito</h2>
           <button onClick={() => setShowCart(false)} aria-label="Cerrar">
             <FaTimes />
           </button>
         </div>
         <div className="p-6 space-y-4 overflow-y-auto h-[calc(100%-160px)]">
           {carrito.length === 0 ? (
-            <p className="text-black">Tu carrito está vacío.</p>
+            <p className="font-[Montserrat] text-black">Tu carrito está vacío.</p>
           ) : (
             carrito.map(item => (
               <div key={item.id} className="flex gap-4 items-center border-b pb-4 text-black">

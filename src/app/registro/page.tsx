@@ -45,17 +45,17 @@ export default function RegistroPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-white pt-24">
       <div className="w-full max-w-md bg-white shadow-lg p-8 rounded-lg border">
-        <h2 className="text-2xl text-center text-black mb-6" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+        <h2 className="font-[Beige] text-2xl text-center text-black mb-6">
           Crear cuenta
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm text-gray-700 mb-1" htmlFor="name">Nombre</label>
+            <label className=" font-[Montserrat] block text-sm text-gray-700 mb-1" htmlFor="name">Nombre</label>
             <input
               type="text"
               id="name"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+              className="font-[Montserrat] w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="Tu nombre"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
@@ -63,11 +63,11 @@ export default function RegistroPage() {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-1" htmlFor="apellido">Apellido</label>
+            <label className="font-[Montserrat] block text-sm text-gray-700 mb-1" htmlFor="apellido">Apellido</label>
             <input
               type="text"
               id="apellido"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+              className="font-[Montserrat] w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="Tu apellido"
               value={apellido}
               onChange={(e) => setApellido(e.target.value)}
@@ -77,11 +77,11 @@ export default function RegistroPage() {
 
 
           <div>
-            <label className="block text-sm text-gray-700 mb-1" htmlFor="email">Correo electrónico</label>
+            <label className="font-[Montserrat] block text-sm text-gray-700 mb-1" htmlFor="email">Correo electrónico</label>
             <input
               type="email"
               id="email"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+              className="font-[Montserrat] w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="correo@ejemplo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -90,11 +90,11 @@ export default function RegistroPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-700 mb-1" htmlFor="password">Contraseña</label>
+            <label className=" font-[Montserrat] block text-sm text-gray-700 mb-1" htmlFor="password">Contraseña</label>
             <input
               type="password"
               id="password"
-              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+              className="font-[Montserrat] w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -104,8 +104,7 @@ export default function RegistroPage() {
 
           <button
             type="submit"
-            className="btn-animated w-full"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif" }}
+            className=" font-[Montserrat] btn-animated w-full"
           >
             Registrarse
           </button>
