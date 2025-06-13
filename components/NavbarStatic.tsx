@@ -188,11 +188,7 @@ export default function Navbar() {
                   {carrito.reduce((total, item) => total + item.cantidad, 0)}
                 </span>
               )}
-              
             </button>
-
-
-           
           </div>
         </div>
       </nav>
