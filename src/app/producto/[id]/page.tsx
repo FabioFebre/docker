@@ -6,9 +6,9 @@ import Image from 'next/image';
 
 export default function ProductoDetalle() {
   const params = useParams();
-  const initialId = Array.isArray(params.id) ? params.id[0] : params.id;
-
   const router = useRouter();
+
+  const initialId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? '';
   const [producto, setProducto] = useState<any>(null);
   const [idActual, setIdActual] = useState(initialId);
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ export default function ProductoDetalle() {
   const [imagenSeleccionada, setImagenSeleccionada] = useState<string | null>(null);
   const [recomendados, setRecomendados] = useState<any[]>([]);
   const [loadingRec, setLoadingRec] = useState(true);
-
+  const [cantidad, setCantidad] = useState(1);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [isHovering, setIsHovering] = useState(false);
 
@@ -35,6 +35,7 @@ export default function ProductoDetalle() {
       const data = await res.json();
       setProducto(data);
       setImagenSeleccionada(data.imagen?.[0] || null);
+      setCantidad(1);
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -61,6 +62,7 @@ export default function ProductoDetalle() {
         setLoadingRec(false);
       }
     }
+
     if (!loading) fetchRecomendados();
   }, [loading, idActual]);
 
@@ -75,6 +77,11 @@ export default function ProductoDetalle() {
       return;
     }
 
+    if (cantidad < 1) {
+      alert('La cantidad debe ser al menos 1');
+      return;
+    }
+
     try {
       const res = await fetch('https://sg-studio-backend.onrender.com/carrito/add', {
         method: 'POST',
@@ -82,7 +89,7 @@ export default function ProductoDetalle() {
         body: JSON.stringify({
           usuarioId: userId,
           productoId: producto.id,
-          cantidad: 1,
+          cantidad,
           talla: 'M',
           color: producto.color || 'negro',
         }),
@@ -94,6 +101,8 @@ export default function ProductoDetalle() {
       }
 
       alert('Producto agregado al carrito');
+      window.location.reload(); // <- fuerza recarga completa de la página
+
     } catch (err) {
       console.error(err);
       alert('Hubo un error al agregar al carrito');
@@ -109,15 +118,12 @@ export default function ProductoDetalle() {
   return (
     <div className="bg-white min-h-screen px-6 md:px-12 pt-24 md:pt-32 pb-12">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[auto_500px_1fr] gap-6">
-        {/* Miniaturas */}
         <div className="flex flex-row md:flex-col gap-3 items-center md:items-start">
           {imagen.map((img: string, index: number) => (
             <button
               key={index}
               onClick={() => setImagenSeleccionada(img)}
-              className={`border rounded overflow-hidden w-[60px] h-[80px] hover:opacity-80 transition ${
-                imagenSeleccionada === img ? 'ring-2 ring-black' : ''
-              }`}
+              className={`border rounded overflow-hidden w-[60px] h-[80px] hover:opacity-80 transition ${imagenSeleccionada === img ? 'ring-2 ring-black' : ''}`}
             >
               <Image
                 src={img}
@@ -130,7 +136,6 @@ export default function ProductoDetalle() {
           ))}
         </div>
 
-        {/* Imagen principal con zoom */}
         <div
           className="relative w-full h-[800px] shadow-md rounded-lg overflow-hidden flex items-center justify-center bg-gray-100"
           style={{ cursor: isHovering ? 'zoom-in' : 'default' }}
@@ -154,23 +159,66 @@ export default function ProductoDetalle() {
           )}
         </div>
 
-        {/* Detalles */}
         <div className="space-y-4 text-gray-800">
           <h1 className="font-[Beige] text-6xl mb-1">{nombre}</h1>
-          <p className="font-[Beige] text-2xl text-black-700">PEN {precio}</p>
+          <p className="font-[Beige] text-2xl">PEN {precio}</p>
           <hr />
           <h5 className="font-[Montserrat] text-sm">{color}</h5>
+
+          <div className="mb-4">
+            <label className="block text-sm font-[Montserrat] mb-1">Cantidad:</label>
+            {producto.cantidad === 0 ? (
+              <p className="text-red-500 text-sm">Sin stock disponible</p>
+            ) : (
+              <>
+                <div className="flex items-center border rounded w-fit overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                    className="px-4 py-2 text-xl text-gray-600 hover:bg-gray-100"
+                    disabled={cantidad <= 1}
+                  >
+                    –
+                  </button>
+                  <span className="px-6 py-2 text-center text-xl">{cantidad}</span>
+                  <button
+                    type="button"
+                    onClick={() => setCantidad(Math.min(producto.cantidad, cantidad + 1))}
+                    className="px-4 py-2 text-xl text-gray-600 hover:bg-gray-100"
+                    disabled={cantidad >= producto.cantidad}
+                  >
+                    +
+                  </button>
+                </div>
+
+                <input
+                  type="number"
+                  className="hidden w-16 text-center border rounded py-1 mt-2"
+                  value={cantidad}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) {
+                      const nueva = Math.max(1, Math.min(val, producto.cantidad));
+                      setCantidad(nueva);
+                    }
+                  }}
+                  min={1}
+                  max={producto.cantidad}
+                />
+              </>
+            )}
+          </div>
+
           <button
             onClick={handleAgregarAlCarrito}
-            className="font-[Montserrat] btn-animated w-full text-sm"
+            className="px-6 py-2 bg-black text-white rounded hover:opacity-80"
+            disabled={producto.cantidad === 0}
           >
-            Añadir al carrito
+            Agregar al carrito
           </button>
-          <p className="font-[Montserrat] text-gray-600 text-sm truncate">{descripcion}</p>
         </div>
       </div>
 
-      {/* Recomendados */}
       <div className="max-w-6xl mx-auto mt-16">
         <h5 className="text-2xl mb-4 text-black">Te puede interesar</h5>
         {loadingRec ? (
