@@ -134,74 +134,76 @@ export default function Navbar() {
   };
 
   // Classes
-  const bgClass = scrolled || hovered || showSearch
-    ? 'bg-white text-black shadow-md border-b border-gray-300'
-    : 'bg-transparent text-black border-b border-transparent';
+const bgClass = scrolled || hovered || showSearch
+  ? 'bg-white text-black shadow-md border-b border-gray-300'
+  : 'bg-transparent text-white border-b border-transparent';
+
+
 
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-50 px-8 py-4 transition-all duration-300 ${bgClass}`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-black hover:opacity-80">
-            SG STUDIO
-          </Link>
-          <ul className="flex gap-6  mt-3 text-sm font-medium text-black">
-            <li className="relative group">
-              <Link href="/woman" className="font-[Beige] underline-hover">
-                WOMAN
-              </Link>
-                 <div className="absolute left-0 top-full w-64 bg-white shadow-lg p-4 border text-sm z-10
-                  opacity-0 pointer-events-none transition-opacity duration-300 ease-out
-                  group-hover:opacity-100 group-hover:pointer-events-auto">
-
-                  <ul className="font-[Beige] space-y-5 text-black">
-                  {categorias.map((c, i) => (
-                    <li key={c.id}
-                    className={`transition duration-300 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
-                    style={{ transitionDelay: `${i * 50}ms` }}
-                              >
-                      <Link href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}
-                                  className="block text-black hover:text-gray-700 transition-colors"
-                                  >
-                        {c.nombre}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </li>
+  className={`fixed top-0 left-0 w-full z-50 px-8 py-4 transition-all duration-300 ${bgClass}`}
+  onMouseEnter={() => setHovered(true)}
+  onMouseLeave={() => setHovered(false)}
+>
+  <div className="flex justify-between items-center">
+    <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-colors duration-300">
+      SG STUDIO
+    </Link>
+    <ul className="flex gap-6 mt-3 text-sm font-medium transition-colors duration-300">
+      <li className="relative group">
+        <Link href="/woman" className="font-[Beige] underline-hover">
+          WOMAN
+        </Link>
+        <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 border text-sm z-10
+          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
+          group-hover:opacity-100 group-hover:pointer-events-auto">
+          <ul className="font-[Beige] space-y-5 text-black">
+            {categorias.map((c, i) => (
+              <li key={c.id}
+                  className={`transition duration-300 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
+                  style={{ transitionDelay: `${i * 50}ms` }}>
+                <Link
+                  href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}
+                  className="block hover:text-gray-700 transition-colors"
+                >
+                  {c.nombre}
+                </Link>
+              </li>
+            ))}
           </ul>
-          <div className="flex gap-4 text-xl text-black">
-            <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-pink-500">
-              <FaUser />
-            </button>
-            <button
-              ref={buttonRef}
-              onClick={() => setShowSearch(v => !v)}
-              aria-label="Buscar"
-              className="hover:text-pink-500"
-            >
-              <FaSearch />
-            </button>
-            <button
-              onClick={() => setShowCart(true)}
-              aria-label="Carrito"
-              className="hover:text-pink-500 relative"
-            >
-              <FaShoppingBag />
-              {carrito.length > 0 && (
-                <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {carrito.reduce((t, i) => t + i.cantidad, 0)}
-                </span>
-              )}
-            </button>
-          </div>
         </div>
-      </nav>
+      </li>
+    </ul>
+    <div className="flex gap-4 text-xl transition-colors duration-300">
+      <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-pink-500 transition-colors duration-300">
+        <FaUser />
+      </button>
+      <button
+        ref={buttonRef}
+        onClick={() => setShowSearch(v => !v)}
+        aria-label="Buscar"
+        className="hover:text-pink-500 transition-colors duration-300"
+      >
+        <FaSearch />
+      </button>
+      <button
+        onClick={() => setShowCart(true)}
+        aria-label="Carrito"
+        className="hover:text-pink-500 relative transition-colors duration-300"
+      >
+        <FaShoppingBag />
+        {carrito.length > 0 && (
+          <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+            {carrito.reduce((t, i) => t + i.cantidad, 0)}
+          </span>
+        )}
+      </button>
+    </div>
+  </div>
+</nav>
+
 
       {showSearch && (
         <div
