@@ -41,6 +41,7 @@ type Producto = {
   precio: number
   descripcion: string
   imagen: string[]
+  seleccionado: boolean
 }
 
 export default function Home() {
@@ -118,7 +119,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
-                {currentItems.map(({ id, imagen, nombre, precio, descripcion }) => (
+                {currentItems.map(({ id, imagen, nombre, precio, descripcion, seleccionado }) => (
                   <Link key={id} href={`/producto/${id}`} className="group">
                     <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300">
                       <div className="relative w-full h-72">
@@ -135,6 +136,13 @@ export default function Home() {
                             alt={`${nombre} alternativa`}
                             className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                           />
+                        )}
+                        {seleccionado && (
+                          <div className="absolute top-2 left-2 z-10">
+                            <span className="inline-block bg-white text-black text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                              New Arrivals
+                            </span>
+                          </div>
                         )}
                       </div>
                       <div className="p-4 text-center">
@@ -177,7 +185,6 @@ export default function Home() {
         )}
       </main>
 
-      {/* SplashScreen: fixed full-screen y con z-50 para cubrir todo */}
       {showSplash && (
         <div
           className={`fixed inset-0 z-50 bg-white flex items-center justify-center transition-opacity duration-1500 ${

@@ -143,6 +143,7 @@ export default function Navbar() {
       )
     );
   };
+
   const eliminarProducto = async (itemId: number) => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const storedUser = localStorage.getItem('usuario');
@@ -170,7 +171,6 @@ export default function Navbar() {
     localStorage.setItem('carrito', JSON.stringify(nuevoCarrito));
     setCarrito(nuevoCarrito);
   };
-
 
   return (
     <>
@@ -247,71 +247,67 @@ export default function Navbar() {
         className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className=" font-[Beige] text-lg font-bold text-black">Tu carrito</h2>
+          <h2 className="text-lg font-bold text-black">Tu carrito</h2>
           <button onClick={() => setShowCart(false)} aria-label="Cerrar">
             <FaTimes className="text-black" />
           </button>
         </div>
 
         <div className="p-6 space-y-4 overflow-y-auto h-[calc(100%-80px)]">
-          {carrito.length === 0 ? (
-            <p className="font-[Montserrat] text-black">Tu carrito está vacío.</p>
+          {Array.isArray(carrito) && carrito.length === 0 ? (
+            <p className="text-black">Tu carrito está vacío.</p>
           ) : (
             carrito.map((item) => (
               <div key={item.id} className="flex gap-4 items-center border-b pb-4 relative">
-           <img
-             src={item.producto.imagen[0]}
-             alt={item.producto.nombre}
-             className="w-16 h-16 object-cover rounded"
-           />
-           <div className="flex flex-col flex-1">
-             <span className="text-sm font-semibold text-black">{item.producto.nombre}</span>
-             <span className="text-xs text-gray-600">Talla: {item.talla} | Color: {item.color}</span>
-
-             <div className="flex items-center mt-1">
-               <button
-                 onClick={() => disminuirCantidad(item.id)}
-                 disabled={item.cantidad <= 1}
-                 className="quantity-selector__button px-2 py-1 text-gray-700 disabled:opacity-50"
-               >
-                 <svg aria-hidden="true" focusable="false" fill="none" width="10" className="icon icon-minus" viewBox="0 0 12 12">
-                   <path d="M0 6h12" stroke="currentColor" strokeWidth="1.5"></path>
-                 </svg>
-               </button>
-
-               <input
-                 className="quantity-selector__input w-10 text-center text-sm border text-black mx-2"
-                 type="number"
-                 value={item.cantidad}
-                 readOnly
-               />
-
-               <button
-                 onClick={() => aumentarCantidad(item.id)}
-                 className="quantity-selector__button px-2 py-1 text-gray-700"
-               >
-                 <svg aria-hidden="true" focusable="false" fill="none" width="10" className="icon icon-plus" viewBox="0 0 12 12">
-                   <path d="M6 0v12M0 6h12" stroke="currentColor" strokeWidth="1.5"></path>
-                 </svg>
-               </button>
-             </div>
-              <button
-                onClick={() => eliminarProducto(item.id)}
-                className="absolute top-0 right-0 text-gray-500 hover:text-red-600"
-                aria-label="Eliminar producto"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 6h18" />
-                  <path d="M8 6v14c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V6" />
-                  <path d="M10 11v6" />
-                  <path d="M14 11v6" />
-                  <path d="M5 6l1-2h12l1 2" />
-                </svg>
-              </button>
-
-             <span className="text-sm text-gray-800 font-bold">PEN {item.producto.precio}</span>
-           </div>
-          </div>
+                <img
+                  src={item.producto.imagen[0]}
+                  alt={item.producto.nombre}
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <div className="flex flex-col flex-1">
+                  <span className="text-sm font-semibold text-black">{item.producto.nombre}</span>
+                  <span className="text-xs text-gray-600">Talla: {item.talla} | Color: {item.color}</span>
+                  <div className="flex items-center mt-1">
+                    <button
+                      onClick={() => disminuirCantidad(item.id)}
+                      disabled={item.cantidad <= 1}
+                      className="px-2 py-1 text-gray-700 disabled:opacity-50"
+                    >
+                      <svg fill="none" width="10" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M0 6h12" />
+                      </svg>
+                    </button>
+                    <input
+                      className="w-10 text-center text-sm border text-black mx-2"
+                      type="number"
+                      value={item.cantidad}
+                      readOnly
+                    />
+                    <button
+                      onClick={() => aumentarCantidad(item.id)}
+                      className="px-2 py-1 text-gray-700"
+                    >
+                      <svg fill="none" width="10" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M6 0v12M0 6h12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <span className="text-sm text-gray-800 font-bold">PEN {item.producto.precio}</span>
+                </div>
+                <button
+                  onClick={() => eliminarProducto(item.id)}
+                  className="absolute top-0 right-0 text-gray-500 hover:text-red-600"
+                  aria-label="Eliminar producto"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M3 6h18" />
+                    <path d="M8 6v14c0 .6.4 1 1 1h6c.6 0 1-.4 1-1V6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M5 6l1-2h12l1 2" />
+                  </svg>
+                </button>
+              </div>
             ))
           )}
         </div>

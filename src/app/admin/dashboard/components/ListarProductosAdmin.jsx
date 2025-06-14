@@ -70,8 +70,11 @@ export default function ListarProductosAdmin() {
   };
 
   const handleCambio = (e) => {
-    const { name, value } = e.target;
-    setProductoEditando((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setProductoEditando((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleImagenChange = (e) => {
@@ -160,7 +163,7 @@ export default function ListarProductosAdmin() {
                   {composicion && <p>Composición: {composicion}</p>}
                   {info && <p>Info: {info}</p>}
                   {cuidados && <p>Cuidados: {cuidados}</p>}
-                  {seleccionado && <p>Seleccionado: {seleccionado}</p>}
+                  {seleccionado && <p>Seleccionado {seleccionado}</p>}
 
                 </div>
                 <div className="flex justify-between mt-4">
@@ -309,6 +312,17 @@ export default function ListarProductosAdmin() {
                   />
                 </label>
               </div>
+              <label className="block">
+                <span className="text-gray-700">Seleccionado:</span>
+                <input
+                  type="checkbox"
+                  name="seleccionado"
+                  checked={productoEditando.seleccionado || false}
+                  onChange={handleCambio}
+                  className="mt-1 h-5 w-5 text-green-600"
+                />
+              </label>
+
 
               <div>
                 <label className="block mb-2 text-gray-700">Imágenes nuevas:</label>
