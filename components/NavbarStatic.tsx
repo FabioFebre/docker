@@ -227,9 +227,10 @@ export default function Navbar() {
         </div>
 
         <div className="p-6 space-y-4 overflow-y-auto h-[calc(100%-80px)]">
-          {carrito.length === 0 ? (
+          {Array.isArray(carrito) && carrito.length === 0 ? (
             <p className="font-[Montserrat] text-black">Tu carrito está vacío.</p>
           ) : (
+            Array.isArray(carrito) &&
             carrito.map((item) => (
               <div key={item.id} className="flex gap-4 items-center border-b pb-4">
                 <img
@@ -239,7 +240,9 @@ export default function Navbar() {
                 />
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold text-black">{item.producto.nombre}</span>
-                  <span className="text-xs text-gray-600">Talla: {item.talla} | Color: {item.color}</span>
+                  <span className="text-xs text-gray-600">
+                    Talla: {item.talla} | Color: {item.color}
+                  </span>
                   <span className="text-xs text-gray-600">Cantidad: {item.cantidad}</span>
                   <span className="text-sm text-gray-800 font-bold">PEN {item.producto.precio}</span>
                 </div>
@@ -247,6 +250,7 @@ export default function Navbar() {
             ))
           )}
         </div>
+
       </div>
     </>
   );
