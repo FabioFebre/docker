@@ -9,6 +9,7 @@ type Producto = {
   nombre: string;
   imagen: string[];
   precio: number;
+  seleccionado: boolean;
 };
 
 export default function BuscarPage() {
@@ -19,7 +20,6 @@ export default function BuscarPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1) Carga todos los productos una vez
   useEffect(() => {
     fetch('https://sg-studio-backend.onrender.com/productos')
       .then(res => {
@@ -36,7 +36,6 @@ export default function BuscarPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 2) Filtra localmente según query
   useEffect(() => {
     const term = query.trim().toLowerCase();
     if (!term) {
@@ -51,7 +50,7 @@ export default function BuscarPage() {
 
   return (
     <main className="px-8 py-6 bg-white min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center pt-10">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800 text-center pt-14">
         Resultados para “<span className="text-black">{query}</span>”
       </h1>
 
@@ -81,6 +80,13 @@ export default function BuscarPage() {
                   alt={p.nombre}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
+                {p.seleccionado && (
+                  <div className="absolute top-2 left-2 z-10">
+                    <span className="inline-block bg-white text-black text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                      New Arrivals
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="p-4 text-center">
                 <h2 className="text-gray-800 font-semibold truncate">{p.nombre}</h2>

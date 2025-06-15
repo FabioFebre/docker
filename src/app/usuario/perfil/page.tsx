@@ -29,6 +29,7 @@ export default function PerfilUsuario() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   const [loadingCarrito, setLoadingCarrito] = useState(true);
+  const [mensajeCompra, setMensajeCompra] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -66,6 +67,32 @@ export default function PerfilUsuario() {
     router.push('/');
   };
 
+  const handleEliminarItem = async (itemId: number) => {
+    try {
+      await fetch(`https://sg-studio-backend.onrender.com/remove/${itemId}`, {
+        method: 'DELETE',
+      });
+      setCarrito((prev) => prev.filter((item) => item.id !== itemId));
+    } catch (err) {
+      console.error('Error al eliminar el producto del carrito:', err);
+    }
+  };
+
+  const handleFinalizarCompra = async () => {
+    try {
+      await fetch(`https://sg-studio-backend.onrender.com/carrito/${usuario?.id}`, {
+        method: 'DELETE',
+      });
+      setCarrito([]);
+      setMensajeCompra('¡Gracias por tu compra!');
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
+    } catch (err) {
+      console.error('Error al finalizar la compra:', err);
+    }
+  };
+
   if (!usuario) {
     return <p className="text-center mt-10 text-gray-600">Cargando datos del usuario...</p>;
   }
@@ -92,6 +119,13 @@ export default function PerfilUsuario() {
           </p>
         </div>
 
+        {/* Mensaje de compra */}
+        {mensajeCompra && (
+          <div className="p-4 text-center bg-green-100 text-green-800 rounded-md">
+            {mensajeCompra}
+          </div>
+        )}
+
         {/* Carrito */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold uppercase">Carrito de compras</h2>
@@ -108,27 +142,42 @@ export default function PerfilUsuario() {
               </a>
             </>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2">
-              {carrito.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition"
-                >
-                  <img
-                    src={item.producto.imagen[0]}
-                    alt={item.producto.nombre}
-                    className="w-24 h-24 object-cover rounded-md"
-                  />
-                  <div className="flex-1 space-y-1">
-                    <h3 className="text-lg font-semibold">{item.producto.nombre}</h3>
-                    <p className="text-sm text-gray-700">PEN {item.producto.precio}</p>
-                    <p className="text-sm text-gray-500">
-                      Talla: {item.talla} | Color: {item.color}
-                    </p>
-                    <p className="text-sm text-gray-500">Cantidad: {item.cantidad}</p>
+            <div className="space-y-4">
+              <div className="grid gap-6 md:grid-cols-2">
+                {carrito.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition"
+                  >
+                    <img
+                      src={item.producto.imagen[0]}
+                      alt={item.producto.nombre}
+                      className="w-24 h-24 object-cover rounded-md"
+                    />
+                    <div className="flex-1 space-y-1">
+                      <h3 className="text-lg font-semibold">{item.producto.nombre}</h3>
+                      <p className="text-sm text-gray-700">PEN {item.producto.precio}</p>
+                      <p className="text-sm text-gray-500">
+                        Talla: {item.talla} | Color: {item.color}
+                      </p>
+                      <p className="text-sm text-gray-500">Cantidad: {item.cantidad}</p>
+                      <button
+                        onClick={() => handleEliminarItem(item.id)}
+                        className="mt-2 text-red-600 text-sm hover:underline"
+                      >
+                        Eliminar producto
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+
+              <button
+                onClick={handleFinalizarCompra}
+                className="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm"
+              >
+                Finalizar compra
+              </button>
             </div>
           )}
         </div>
@@ -137,8 +186,12 @@ export default function PerfilUsuario() {
         <div className="border-t border-gray-300 pt-6">
           <h2 className="text-xl font-semibold uppercase mb-4">Información de la cuenta</h2>
           <div className="space-y-2 text-sm text-gray-800">
-            <p><strong>Nombre:</strong> {usuario.nombre}</p>
-            <p><strong>Email:</strong> {usuario.email}</p>
+            <p>
+              <strong>Nombre:</strong> {usuario.nombre}
+            </p>
+            <p>
+              <strong>Email:</strong> {usuario.email}
+            </p>
           </div>
         </div>
       </div>
