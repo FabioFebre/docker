@@ -34,25 +34,19 @@ export default function Navbar() {
     fetch('https://sg-studio-backend.onrender.com/categorias')
       .then(res => res.json())
       .then(setCategorias)
-      .catch(err => console.error('Error al cargar categorías:', err));
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
     fetch('https://sg-studio-backend.onrender.com/productos')
       .then(res => res.json())
       .then((data: Producto[]) => setAllProducts(data))
-      .catch(err => console.error('Error al cargar productos:', err));
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
     const term = searchTerm.trim().toLowerCase();
-    if (term.length < 3) {
-      setSugerencias([]);
-    } else {
-      setSugerencias(
-        allProducts.filter(p => p.nombre.toLowerCase().includes(term))
-      );
-    }
+    setSugerencias(term.length < 3 ? [] : allProducts.filter(p => p.nombre.toLowerCase().includes(term)));
   }, [searchTerm, allProducts]);
 
   useEffect(() => {
@@ -63,7 +57,9 @@ export default function Navbar() {
         !searchRef.current.contains(e.target as Node) &&
         buttonRef.current &&
         !buttonRef.current.contains(e.target as Node)
-      ) setShowSearch(false);
+      ) {
+        setShowSearch(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -71,11 +67,9 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        showCart &&
-        cartRef.current &&
-        !cartRef.current.contains(e.target as Node)
-      ) setShowCart(false);
+      if (showCart && cartRef.current && !cartRef.current.contains(e.target as Node)) {
+        setShowCart(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -89,7 +83,7 @@ export default function Navbar() {
       fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}`)
         .then(res => res.json())
         .then(data => setCarrito(data.items))
-        .catch(err => console.error('Error al obtener carrito:', err));
+        .catch(console.error);
     } else {
       const saved = localStorage.getItem('carrito');
       if (saved) setCarrito(JSON.parse(saved));
@@ -101,6 +95,28 @@ export default function Navbar() {
       localStorage.setItem('carrito', JSON.stringify(carrito));
     }
   }, [carrito]);
+
+  useEffect(() => {
+    const onStorageChange = (e: StorageEvent) => {
+      if (e.key === 'carritoActualizado' && e.newValue === 'true') {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const storedUser = localStorage.getItem('usuario');
+        if (isLoggedIn && storedUser) {
+          const user = JSON.parse(storedUser);
+          fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}`)
+            .then(res => res.json())
+            .then(data => setCarrito(data.items))
+            .catch(console.error);
+        } else {
+          setCarrito([]);
+          localStorage.removeItem('carrito');
+        }
+        localStorage.removeItem('carritoActualizado');
+      }
+    };
+    window.addEventListener('storage', onStorageChange);
+    return () => window.removeEventListener('storage', onStorageChange);
+  }, []);
 
   const onSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchTerm.trim().length > 2) {
@@ -114,29 +130,55 @@ export default function Navbar() {
   const handleUserClick = () => {
     const logged = localStorage.getItem('isLoggedIn') === 'true';
     const role = localStorage.getItem('role');
-    if (logged) router.push(role === 'admin' ? '/admin/dashboard' : '/usuario/perfil');
-    else router.push('/login');
+    router.push(logged ? (role === 'admin' ? '/admin/dashboard' : '/usuario/perfil') : '/login');
   };
 
   const calcularTotal = () =>
     carrito.reduce((sum, item) => sum + item.producto.precio * item.cantidad, 0);
 
-  const removeItem = (id: number) => {
-    const updated = carrito.filter(i => i.id !== id);
-    setCarrito(updated);
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      const user = JSON.parse(localStorage.getItem('usuario')!);
-      fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}/eliminar/${id}`, { method: 'DELETE' });
+  const removeItem = async (itemId: number) => {
+    try {
+      const res = await fetch(`https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const storedUser = localStorage.getItem('usuario');
+        if (isLoggedIn && storedUser) {
+          const user = JSON.parse(storedUser);
+          const updated = await fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}`);
+          const data = await updated.json();
+          setCarrito(data.items);
+        } else {
+          const updatedCarrito = carrito.filter(item => item.id !== itemId);
+          setCarrito(updatedCarrito);
+          localStorage.setItem('carrito', JSON.stringify(updatedCarrito));
+        }
+      } else {
+        console.error('No se pudo eliminar el item del carrito');
+      }
+    } catch (error) {
+      console.error('Error al eliminar item del carrito:', error);
     }
   };
 
   const updateCantidad = (id: number, delta: number) => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const user = isLoggedIn ? JSON.parse(localStorage.getItem('usuario')!) : null;
+
     setCarrito(prev => {
       const updated = prev.map(item =>
-        item.id === id
-          ? { ...item, cantidad: Math.max(1, item.cantidad + delta) }
-          : item
+        item.id === id ? { ...item, cantidad: Math.max(1, item.cantidad + delta) } : item
       );
+      if (isLoggedIn && user) {
+        const updatedItem = updated.find(i => i.id === id);
+        fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}/actualizar/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cantidad: updatedItem?.cantidad }),
+        });
+      }
       return updated;
     });
   };
@@ -144,7 +186,6 @@ export default function Navbar() {
   const bgClass = scrolled || hovered || showSearch
     ? 'bg-white text-black shadow-md border-b border-gray-300'
     : 'bg-transparent text-white border-b border-transparent';
-
   return (
     <>
       <nav className={`fixed top-0 left-0 w-full z-50 px-8 py-4 transition-all duration-300 ${bgClass}`}
@@ -251,9 +292,9 @@ export default function Navbar() {
                     <span>{item.cantidad}</span>
                     <button onClick={() => updateCantidad(item.id, 1)} className="px-2 py-1 text-sm border rounded">+</button>
                   </div>
-                  <span className="font-bold">PEN {item.producto.precio}</span>
+                  <span className="font-bold text-black">PEN {item.producto.precio}</span>
                 </div>
-                <button onClick={() => removeItem(item.id)} className="text-red-600 hover:text-red-800 transition-colors">
+                <button onClick={() => removeItem(item.id)} className="text-black-600 hover:text-gray-800 transition-colors">
                   <FaTrash />
                 </button>
               </div>
@@ -262,11 +303,11 @@ export default function Navbar() {
         </div>
         {carrito.length > 0 && (
           <div className="p-6 border-t">
-            <div className="flex justify-between font-semibold mb-2 text-black">
-              <span>Total:</span><span>PEN {calcularTotal().toFixed(2)}</span>
+            <div className="flex font-semibold mb-2 text-black">
+              <span>Total:</span><span className='ml-2'>PEN {calcularTotal().toFixed(2)}</span>
             </div>
             <button onClick={() => { setShowCart(false); router.push('/checkout'); }}
-              className="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 w-full rounded">
+              className="btn-animated w-full rounded">
               Ir al pago
             </button>
           </div>

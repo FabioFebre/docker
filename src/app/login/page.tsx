@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [mensaje, setMensaje] = useState('');
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
@@ -25,7 +25,7 @@ export default function LoginPage() {
       if (response.ok && data.usuario) {
         localStorage.setItem('usuario', JSON.stringify(data.usuario));
         localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('role', data.usuario.rol); 
+        localStorage.setItem('role', data.usuario.rol);
 
         setMensaje('');
 
@@ -34,7 +34,6 @@ export default function LoginPage() {
         } else {
           router.push('/');
         }
-
       } else {
         setMensaje(data.error || 'Correo o contraseña incorrectos');
       }
@@ -47,13 +46,13 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-white pt-24">
       <div className="w-full max-w-md bg-white shadow-lg p-8 rounded-lg border">
-        <h2 className="text-2xl text-center text-black mb-6">
-          Iniciar sesión
-        </h2>
+        <h2 className="text-2xl text-center text-black mb-6">Iniciar sesión</h2>
 
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
-            <label className="font-[Beige]block text-sm text-black mb-1" htmlFor="email">Correo electrónico</label>
+            <label className="block text-sm text-black mb-1" htmlFor="email">
+              Correo electrónico
+            </label>
             <input
               type="email"
               id="email"
@@ -66,7 +65,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-700 mb-1" htmlFor="password">Contraseña</label>
+            <label className="block text-sm text-black mb-1" htmlFor="password">
+              Contraseña
+            </label>
             <input
               type="password"
               id="password"
@@ -77,9 +78,10 @@ export default function LoginPage() {
               required
             />
           </div>
+
           <button
             type="submit"
-            className="font-[Montserrat] btn-animated w-full"
+            className="font-[Montserrat] w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition duration-200"
           >
             Iniciar sesión
           </button>
@@ -90,6 +92,12 @@ export default function LoginPage() {
             {mensaje}
           </div>
         )}
+        <p className="mt-6 text-center text-sm text-gray-600">
+          ¿No tienes una cuenta?{' '}
+          <Link href="/registro" className="text-black font-medium hover:underline">
+            Regístrate aquí
+          </Link>
+        </p>
       </div>
     </main>
   );

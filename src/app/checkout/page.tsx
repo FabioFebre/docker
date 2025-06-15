@@ -121,7 +121,7 @@ export default function CheckoutPage() {
             onChange={handleChange}
             placeholder="Teléfono"
             required
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           />
           <input
             name="departamento"
@@ -129,7 +129,7 @@ export default function CheckoutPage() {
             onChange={handleChange}
             placeholder="Departamento"
             required
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           />
           <input
             name="provincia"
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
             onChange={handleChange}
             placeholder="Provincia"
             required
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           />
           <input
             name="distrito"
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
             onChange={handleChange}
             placeholder="Distrito"
             required
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           />
           <input
             name="direccion"
@@ -153,20 +153,20 @@ export default function CheckoutPage() {
             onChange={handleChange}
             placeholder="Dirección"
             required
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           />
           <input
             name="referencia"
             value={form.referencia}
             onChange={handleChange}
             placeholder="Referencia"
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           />
           <select
             name="metodoEnvio"
             value={form.metodoEnvio}
             onChange={handleChange}
-            className="w-full p-3 border rounded"
+            className="w-full p-3 text-black border rounded"
           >
             <option value="delivery">Delivery</option>
             <option value="retiro">Retiro en tienda</option>

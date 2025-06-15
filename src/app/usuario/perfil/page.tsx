@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { FaTrash } from 'react-icons/fa';
 
 type Usuario = {
   id: number;
@@ -30,6 +31,7 @@ export default function PerfilUsuario() {
   const [carrito, setCarrito] = useState<ItemCarrito[]>([]);
   const [loadingCarrito, setLoadingCarrito] = useState(true);
   const [mensajeCompra, setMensajeCompra] = useState('');
+  const [comprando, setComprando] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -49,8 +51,6 @@ export default function PerfilUsuario() {
       try {
         const res = await fetch(`https://sg-studio-backend.onrender.com/carrito/${usuario.id}`);
         const data = await res.json();
-        console.log('Status:', res.status);
-        console.log('Respuesta:', data);  
         setCarrito(data.items);
       } catch (err) {
         console.error(err);
@@ -81,17 +81,21 @@ export default function PerfilUsuario() {
   };
 
   const handleFinalizarCompra = async () => {
+    setComprando(true);
     try {
-      await fetch(`https://sg-studio-backend.onrender.com/carrito/${usuario?.id}`, {
-        method: 'DELETE',
-      });
-      setCarrito([]);
+      for (const item of carrito) {
+        await handleEliminarItem(item.id);
+      }
+      localStorage.setItem('carritoActualizado', 'true');
+
       setMensajeCompra('¡Gracias por tu compra!');
       setTimeout(() => {
-        router.push('/');
+        window.location.href = '/';
       }, 2000);
     } catch (err) {
       console.error('Error al finalizar la compra:', err);
+    } finally {
+      setComprando(false);
     }
   };
 
@@ -102,7 +106,6 @@ export default function PerfilUsuario() {
   return (
     <section className="min-h-screen pt-24 px-4 md:px-8 bg-white text-black">
       <div className="max-w-5xl mx-auto space-y-10">
-        {/* Encabezado */}
         <div className="flex justify-between items-center border-b border-gray-300 pb-6">
           <h1 className="text-3xl font-bold tracking-tight uppercase">Mi cuenta</h1>
           <button
@@ -113,7 +116,6 @@ export default function PerfilUsuario() {
           </button>
         </div>
 
-        {/* Bienvenida */}
         <div>
           <p className="text-gray-700 text-lg">
             ¡Hola <span className="font-semibold">{usuario.nombre}</span>! Aquí puedes gestionar tu
@@ -121,14 +123,12 @@ export default function PerfilUsuario() {
           </p>
         </div>
 
-        {/* Mensaje de compra */}
         {mensajeCompra && (
           <div className="p-4 text-center bg-green-100 text-green-800 rounded-md">
             {mensajeCompra}
           </div>
         )}
 
-        {/* Carrito */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold uppercase">Carrito de compras</h2>
           {loadingCarrito ? (
@@ -163,12 +163,23 @@ export default function PerfilUsuario() {
                         Talla: {item.talla} | Color: {item.color}
                       </p>
                       <p className="text-sm text-gray-500">Cantidad: {item.cantidad}</p>
-                      <button
-                        onClick={() => handleEliminarItem(item.id)}
-                        className="mt-2 text-red-600 text-sm hover:underline"
-                      >
-                        Eliminar producto
-                      </button>
+
+                      <div className="flex items-center gap-4 mt-2">
+                        <button
+                          onClick={() => handleEliminarItem(item.id)}
+                          className="text-gray-600 text-sm hover:underline"
+                        >
+                          Eliminar producto
+                        </button>
+
+                        <button
+                          onClick={() => handleEliminarItem(item.id)}
+                          className="text-red-500 hover:text-gray-700 text-lg"
+                          title="Eliminar producto"
+                        >
+                          <FaTrash className='text-black' />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -176,15 +187,19 @@ export default function PerfilUsuario() {
 
               <button
                 onClick={handleFinalizarCompra}
-                className="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition text-sm"
+                disabled={comprando}
+                className={`mt-4 px-4 py-2 rounded text-sm transition ${
+                  comprando
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-black text-white hover:bg-gray-800'
+                }`}
               >
-                Finalizar compra
+                {comprando ? 'Procesando...' : 'Finalizar compra'}
               </button>
             </div>
           )}
         </div>
 
-        {/* Información del usuario */}
         <div className="border-t border-gray-300 pt-6">
           <h2 className="text-xl font-semibold uppercase mb-4">Información de la cuenta</h2>
           <div className="space-y-2 text-sm text-gray-800">
