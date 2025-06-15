@@ -49,6 +49,8 @@ export default function PerfilUsuario() {
       try {
         const res = await fetch(`https://sg-studio-backend.onrender.com/carrito/${usuario.id}`);
         const data = await res.json();
+        console.log('Status:', res.status);
+        console.log('Respuesta:', data);  
         setCarrito(data.items);
       } catch (err) {
         console.error(err);
@@ -69,7 +71,7 @@ export default function PerfilUsuario() {
 
   const handleEliminarItem = async (itemId: number) => {
     try {
-      await fetch(`https://sg-studio-backend.onrender.com/remove/${itemId}`, {
+      await fetch(`https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`, {
         method: 'DELETE',
       });
       setCarrito((prev) => prev.filter((item) => item.id !== itemId));
