@@ -139,7 +139,7 @@ export default function Home() {
                         )}
                         {seleccionado && (
                           <div className="absolute top-2 left-2 z-10">
-                            <span className="inline-block bg-white text-black text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                            <span className="inline-block bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
                               New Arrivals
                             </span>
                           </div>

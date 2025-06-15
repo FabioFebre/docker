@@ -246,7 +246,7 @@ export default function ProductoDetalle() {
                   )}
                 </div>
                 <h3 className="mt-2 text-black font-medium truncate">{item.nombre}</h3>
-                <p className="text-sm text-black">PEN {item.precio}</p>
+                <p className=" font-['Montserrat'] text-sm text-black">PEN {item.precio}</p>
               </div>
             ))}
           </div>
