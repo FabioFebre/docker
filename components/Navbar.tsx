@@ -217,13 +217,13 @@ export default function Navbar() {
             </li>
           </ul>
           <div className="flex gap-4 text-xl transition-colors duration-300">
-            <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-pink-500">
+            <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-gray-400">
               <FaUser />
             </button>
-            <button ref={buttonRef} onClick={() => setShowSearch(v => !v)} aria-label="Buscar" className="hover:text-pink-500">
+            <button ref={buttonRef} onClick={() => setShowSearch(v => !v)} aria-label="Buscar" className="hover:text-gray-400">
               <FaSearch />
             </button>
-            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-pink-500 relative">
+            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-gray-400 relative">
               <FaShoppingBag />
               {carrito.length > 0 && (
                 <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
@@ -270,7 +270,7 @@ export default function Navbar() {
         </div>
       )}
 
-      <div ref={cartRef} className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div ref={cartRef} className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-[9999] transform transition-transform duration-300 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className=" font-[Beige] text-lg font-bold text-black">Tu carrito</h2>
           <button onClick={() => setShowCart(false)} aria-label="Cerrar">
