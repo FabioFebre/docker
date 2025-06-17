@@ -21,6 +21,7 @@ export default function Sidebar({
             { label: 'Ver Productos', icon: LayoutList, view: 'productos' },
             { label: 'Crear Producto', icon: PlusCircle, view: 'crear-producto' },
             { label: 'Usuarios', icon: Layers3, view: 'usuarios' },
+            { label: 'Órdenes', icon: Package, view: 'ordenes' }, 
           ].map(({ label, icon: Icon, view }) => (
             <button
               key={view}

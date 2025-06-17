@@ -10,7 +10,7 @@ import EditarProductoForm from './components/EditarProductoForm';
 import ListarProductosAdmin from './components/ListarProductosAdmin';
 import CrearCategoriaForm from './components/CrearCategoriaForm';
 import ListaCategorias from './components/ListaCategorias';
-
+import VistaOrdenes from './components/VistaOrdenes';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -99,6 +99,13 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+        {vista === 'ordenes' && (
+          <>
+            <h3 className="text-2xl font-bold mb-4">Órdenes de Clientes</h3>
+            <VistaOrdenes />
+          </>
+        )}
+
       </main>
     </div>
   );

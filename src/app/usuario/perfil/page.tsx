@@ -25,6 +25,12 @@ type ItemCarrito = {
   color: string;
   producto: Producto;
 };
+type Orden = {
+  id: number;
+  estado: string;
+  total: number;
+  createdAt: string;
+};
 
 export default function PerfilUsuario() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -32,7 +38,30 @@ export default function PerfilUsuario() {
   const [loadingCarrito, setLoadingCarrito] = useState(true);
   const [mensajeCompra, setMensajeCompra] = useState('');
   const [comprando, setComprando] = useState(false);
+  const [ordenes, setOrdenes] = useState<Orden[]>([]);
+
   const router = useRouter();
+ 
+  useEffect(() => {
+    async function fetchOrdenes() {
+      if (!usuario?.id) return;
+      try {
+        const res = await fetch(`https://sg-studio-backend.onrender.com/ordenes`);
+        const data = await res.json();
+
+        // Filtrar órdenes del usuario
+        const ordenesUsuario = data.filter((orden: any) => orden.usuarioId === usuario.id);
+        setOrdenes(ordenesUsuario);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchOrdenes();
+  }, [usuario]);
+
+
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem('usuario');
@@ -79,6 +108,28 @@ export default function PerfilUsuario() {
       console.error('Error al eliminar el producto del carrito:', err);
     }
   };
+
+  const handleEliminarOrden = async (ordenId: number) => {
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar esta orden?');
+    if (!confirmacion) return;
+
+    try {
+      const res = await fetch(`https://sg-studio-backend.onrender.com/ordenes/${ordenId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        throw new Error('Error al eliminar la orden');
+      }
+
+      // Eliminar del estado local
+      setOrdenes((prev) => prev.filter((orden) => orden.id !== ordenId));
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un problema al eliminar la orden.');
+    }
+  };
+
 
   const handleFinalizarCompra = async () => {
     setComprando(true);
@@ -199,6 +250,33 @@ export default function PerfilUsuario() {
             </div>
           )}
         </div>
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold uppercase">Mis órdenes</h2>
+          {ordenes.length === 0 ? (
+            <p className="text-gray-600">Aún no has realizado ninguna orden.</p>
+          ) : (
+            <div className="space-y-4">
+              {ordenes.map((orden) => (
+                <div key={orden.id} className="p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition relative">
+                  <button
+                    onClick={() => handleEliminarOrden(orden.id)}
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Eliminar
+                  </button>
+                  <p className="text-sm text-gray-600">Orden #{orden.id}</p>
+                  <p className="text-lg font-semibold">Total: PEN {orden.total.toFixed(2)}</p>
+                  <p className="text-sm text-gray-500">Estado: <span className="font-medium">{orden.estado}</span></p>
+                  <p className="text-sm text-gray-400">Fecha: {new Date(orden.createdAt).toLocaleString()}</p>
+                </div>
+
+              ))}
+            </div>
+          )}
+        </div>
+
+      
+
 
         <div className="border-t border-gray-300 pt-6">
           <h2 className="text-xl font-semibold uppercase mb-4">Información de la cuenta</h2>
