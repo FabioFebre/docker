@@ -50,7 +50,7 @@ export default function VistaOrdenes() {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Órdenes de clientes</h2>
+      <h2 className="text-2xl font-semibold mb-6"></h2>
       {ordenes.length === 0 ? (
         <p>No hay órdenes registradas.</p>
       ) : (

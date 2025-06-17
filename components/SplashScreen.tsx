@@ -11,7 +11,7 @@ export default function SplashScreen({ fadeOut = false }: { fadeOut?: boolean })
       <div className="flex flex-col items-center">
         <Image src="/images/logo.png" alt="Logo" width={150} height={150} />
         <div className="mt-4 text-gray-800 font-semibold text-lg flex items-center space-x-1">
-          <span className='font-[Beige]'>Cargando</span>
+          <span>Cargando</span>
           <span className="dots-loader">
             <span>.</span>
             <span>.</span>

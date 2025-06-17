@@ -223,10 +223,10 @@ export default function Navbar() {
             <button ref={buttonRef} onClick={() => setShowSearch(v => !v)} aria-label="Buscar" className="hover:text-gray-400">
               <FaSearch />
             </button>
-            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-gray-400 relative">
+            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-gray-400 relative w-6 h-6">
               <FaShoppingBag />
               {carrito.length > 0 && (
-                <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 bg-gray-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {carrito.reduce((t, i) => t + i.cantidad, 0)}
                 </span>
               )}

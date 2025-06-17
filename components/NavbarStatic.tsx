@@ -207,16 +207,16 @@ export default function Navbar() {
           </ul>
 
           <div className="flex gap-4 text-xl">
-            <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-pink-500">
+            <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-gray-400">
               <FaUser />
             </button>
-            <button ref={buttonRef} onClick={() => setShowSearch(!showSearch)} aria-label="Buscar" className="hover:text-pink-500">
+            <button ref={buttonRef} onClick={() => setShowSearch(!showSearch)} aria-label="Buscar" className="hover:text-gray-400">
               <FaSearch />
             </button>
-            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-pink-500 relative">
+            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-gray-400 relative w-6 h-6">
               <FaShoppingBag />
               {Array.isArray(carrito) && carrito.length > 0 && (
-                <span className="absolute top-0 right-0 bg-pink-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-2 bg-gray-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {carrito.reduce((total, item) => total + item.cantidad, 0)}
                 </span>
               )}

@@ -55,7 +55,7 @@ export default function TextWithIcons() {
                 <div className="bg-white p-4 rounded-full shadow mb-4">
                   <Icon className="w-8 h-8 text-gray-800" />
                 </div>
-                <h4 className="font-[Beige]  text-lg font-semibold mb-2 text-gray-900">{titulo}</h4>
+                <h3 className="font-[Montserrat]  text-lg font-semibold mb-2 text-gray-900">{titulo}</h3>
                 <p className="font-[Montserrat] text-sm text-gray-600">{descripcion}</p>
               </div>
             );

@@ -20,6 +20,7 @@ function Slideshow({ slides, interval = 5000 }: { slides: string[]; interval?: n
   }, [interval, slides.length])
 
   return (
+    <div className="relative">
     <section className="w-full h-screen relative overflow-hidden">
       <Image
         src={slides[current]}
@@ -30,10 +31,51 @@ function Slideshow({ slides, interval = 5000 }: { slides: string[]; interval?: n
       />
       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
         <h5 className="text-white text-4xl font-bold drop-shadow-lg"></h5>
-      </div>
+      </div> 
     </section>
+
+    <button
+        onClick={() => {
+          const seccion = document.getElementById('novedades')
+          if (seccion) {
+            const offset = 60
+            const y = seccion.getBoundingClientRect().top + window.pageYOffset - offset
+            window.scrollTo({ top: y, behavior: 'smooth' })
+          }
+        }}
+        className="group absolute -bottom-6 left-1/2 transform -translate-x-1/2 z-20
+             w-12 h-12 flex items-center justify-center 
+             rounded-full bg-white text-black 
+             text-xl font-bold transition shadow-[0_1px_5px_rgba(0,0,0,0.5)]"
+      >
+      {/* Flecha original que baja y desaparece */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-6 h-6 absolute transition-all duration-300 group-hover:translate-y-2 group-hover:opacity-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+
+      {/* Flecha nueva que aparece desde arriba */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-6 h-6 absolute opacity-0 -translate-y-2 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={2}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+      </button>
+    </div>
   )
 }
+
 
 type Producto = {
   id: number
@@ -98,9 +140,11 @@ export default function Home() {
 
         {!loading && !error && (
           <>
-            <section className="py-8 bg-white">
+            <section id='novedades' className="py-8 bg-white">
+              <h1 className="text-xs text-gray-800 text-center mb-6 mt-8">¡SHOP NOW!</h1>
+              <h1 className="text-2xl font-bold text-gray-800 text-center mb-4">NOVEDADES</h1>
               <div className="flex justify-between items-center px-4 mb-4">
-                <h2 className=" font-[Beige] text-lg font-bold text-gray-800">Novedades</h2>
+                <h2 className="text-lg font-bold text-gray-800 mb-4"></h2>
                 <div className="flex space-x-2">
                   <button
                     onClick={prevPage}
@@ -122,7 +166,7 @@ export default function Home() {
                 {currentItems.map(({ id, imagen, nombre, precio, descripcion, seleccionado }) => (
                   <Link key={id} href={`/producto/${id}`} className="group">
                     <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300">
-                      <div className="relative w-full h-72">
+                      <div className="relative w-full h-150">
                         <img
                           src={imagen[0]}
                           alt={nombre}
@@ -148,11 +192,23 @@ export default function Home() {
                       <div className="p-4 text-center">
                         <p className="text-gray-700 text-sm font-semibold truncate">{nombre}</p>
                         <p className="text-black text-base font-bold mt-1">${precio}</p>
-                        <p className="text-gray-500 text-xs mt-2 truncate">{descripcion}</p>
+                        {/*<p className="text-gray-500 text-xs mt-2 truncate">{descripcion}</p>*/}
                       </div>
                     </div>
                   </Link>
                 ))}
+              </div>
+              {/* Botón al final */}
+              <div className="flex justify-center mt-12">
+                <a
+                  href="/woman"
+                  className="relative inline-block px-9 py-3 border border-black bg-black text-white text-sm overflow-hidden transition-colors duration-300 group"
+                >
+                  <span className="relative z-10 transition-colors duration-300 group-hover:text-black">
+                    VER TODO
+                  </span>
+                  <span className="absolute inset-0 bg-white transform translate-x-full group-hover:translate-x-0 origin-right transition-transform duration-300 ease-in-out"></span>
+                </a>
               </div>
             </section>
 
@@ -173,7 +229,7 @@ export default function Home() {
                   />
                 </picture>
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-center">
-                  <h2 className=" font-[Beige] text-2xl md:text-4xl font-bold drop-shadow-lg">
+                  <h2 className="text-2xl md:text-4xl font-bold drop-shadow-lg">
                     Visítanos en nuestras tiendas
                   </h2>
                 </div>

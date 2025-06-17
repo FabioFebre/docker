@@ -161,7 +161,7 @@ export default function PerfilUsuario() {
           <h1 className="text-3xl font-bold tracking-tight uppercase">Mi cuenta</h1>
           <button
             onClick={handleLogout}
-            className="text-sm font-medium border border-black px-4 py-1.5 rounded hover:bg-black hover:text-white transition"
+            className="text-sm font-medium border border-red-500 px-4 py-1.5 rounded hover:bg-red-500 hover:text-white transition"
           >
             Cerrar sesión
           </button>
