@@ -22,6 +22,7 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([])
   const router = useRouter();
 
   useEffect(() => {
@@ -89,6 +90,27 @@ export default function Navbar() {
       if (saved) setCarrito(JSON.parse(saved));
     }
   }, []);
+
+  useEffect(() => {
+    const fetchCategoriasSeleccionadas = async () => {
+      try {
+        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados')
+        const data = await res.json()
+
+        const unicas = data
+          .map((p: any) => p.categoria)
+          .filter((cat: any, i: number, self: any[]) =>
+            cat && self.findIndex(c => c.id === cat.id) === i
+          )
+
+        setCategoriasSeleccionadas(unicas)
+      } catch (err) {
+        console.error('Error cargando categorías seleccionadas', err)
+      }
+    }
+
+    fetchCategoriasSeleccionadas()
+  }, [])
 
   useEffect(() => {
     if (localStorage.getItem('isLoggedIn') !== 'true') {
@@ -196,26 +218,79 @@ export default function Navbar() {
           <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-colors duration-300">
             SG STUDIO
           </Link>
-          <ul className="flex gap-6 mt-3 text-sm font-medium transition-colors duration-300">
+          <ul className="flex gap-6 text-sm font-medium items-center">
+            {/* WOMAN */}
             <li className="relative group">
-              <Link href="/woman" className="font-[Beige] underline-hover">WOMAN</Link>
-              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 border text-sm z-10
-                opacity-0 pointer-events-none transition-opacity duration-300 ease-out
-                group-hover:opacity-100 group-hover:pointer-events-auto">
-                <ul className="font-[Beige] space-y-5 text-black">
-                  {categorias.map((c, i) => (
-                    <li key={c.id} className={`transition duration-300 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100`}
-                        style={{ transitionDelay: `${i * 50}ms` }}>
-                      <Link href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}
-                            className="block hover:text-gray-700 transition-colors">
-                        {c.nombre}
-                      </Link>
-                    </li>
-                  ))}
+              <Link href="/woman" className="underline-hover text-black hover:text-gray-600 transition">
+                WOMAN
+              </Link>
+              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
+                          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
+                          group-hover:opacity-100 group-hover:pointer-events-auto">
+                
+                {/* Línea superior animada */}
+                <div className="absolute top-0 left-0 h-[3px] bg-gray-800 w-0 transition-all duration-500 origin-left group-hover:w-full"></div>
+
+                <ul className="space-y-5 text-black">
+                  {categorias.length > 0 ? (
+                    categorias.map((cat, i) => (
+                      <li
+                        key={cat.id}
+                        className="transition duration-500 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                        style={{ transitionDelay: `${i * 80}ms` }}
+                      >
+                        <Link
+                          href={`/woman?categoria=${encodeURIComponent(cat.nombre)}`}
+                          className="block hover:text-gray-700 transition-colors"
+                        >
+                          {cat.nombre}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">Cargando...</li>
+                  )}
+                </ul>
+              </div>
+            </li>
+
+            {/* NEW ARRIVALS */}
+            <li className="relative group">
+              <Link href="/newarrivals" className="underline-hover text-black hover:text-gray-600 transition">
+                NEW ARRIVALS
+              </Link>
+              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
+                          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
+                          group-hover:opacity-100 group-hover:pointer-events-auto">
+                
+                {/* Línea superior animada */}
+                <div className="absolute top-0 left-0 h-[3px] bg-gray-800 w-0 transition-all duration-500 origin-left group-hover:w-full"></div>
+
+                <ul className="space-y-5 text-black">
+                  {categoriasSeleccionadas.length > 0 ? (
+                    categoriasSeleccionadas.map((cat, i) => (
+                      <li
+                        key={cat.id}
+                        className="transition duration-500 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                        style={{ transitionDelay: `${i * 80}ms` }}
+                      >
+                        <Link
+                          href={`/newarrivals?categoria=${encodeURIComponent(cat.nombre)}`}
+                          className="block hover:text-gray-700 transition-colors"
+                        >
+                          {cat.nombre}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">Cargando...</li>
+                  )}
                 </ul>
               </div>
             </li>
           </ul>
+
+
           <div className="flex gap-4 text-xl transition-colors duration-300">
             <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-gray-400">
               <FaUser />

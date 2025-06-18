@@ -32,6 +32,8 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([])
+
 
   const router = useRouter();
 
@@ -47,6 +49,28 @@ export default function Navbar() {
     };
     fetchCategorias();
   }, []);
+  
+
+  useEffect(() => {
+    const fetchCategoriasSeleccionadas = async () => {
+      try {
+        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados')
+        const data = await res.json()
+
+        const unicas = data
+          .map((p: any) => p.categoria)
+          .filter((cat: any, i: number, self: any[]) =>
+            cat && self.findIndex(c => c.id === cat.id) === i
+          )
+
+        setCategoriasSeleccionadas(unicas)
+      } catch (err) {
+        console.error('Error cargando categorías seleccionadas', err)
+      }
+    }
+
+    fetchCategoriasSeleccionadas()
+  }, [])
 
   useEffect(() => {
     const fetchCarrito = async () => {
@@ -185,10 +209,16 @@ export default function Navbar() {
             SG STUDIO
           </Link>
 
-          <ul className="flex gap-6 text-sm font-medium">
+          <ul className="flex gap-6 text-sm font-medium items-center">
+            {/* WOMAN */}
             <li className="relative group">
-              <Link href="/woman" className="underline-hover">WOMAN</Link>
-              <div className="absolute left-0 top-full mt-0 w-64 bg-white shadow-lg p-4 hidden group-hover:block border text-sm z-30">
+              <Link
+                href="/woman"
+                className="underline-hover text-black hover:text-gray-600 transition"
+              >
+                WOMAN
+              </Link>
+              <div className="absolute left-0 top-full mt-1 w-64 bg-white shadow-lg p-4 hidden group-hover:block border text-sm z-30">
                 <ul className="space-y-1 text-black">
                   {categorias.length > 0 ? (
                     categorias.map((cat) => (
@@ -204,7 +234,34 @@ export default function Navbar() {
                 </ul>
               </div>
             </li>
+
+            {/* NEW ARRIVALS */}
+            <li className="relative group">
+              <Link
+                href="/newarrivals"
+                className="underline-hover text-black hover:text-gray-600 transition"
+              >
+                NEW ARRIVALS
+              </Link>
+              <div className="absolute left-0 top-full mt-1 w-64 bg-white shadow-lg p-4 hidden group-hover:block border text-sm z-30">
+                <ul className="space-y-1 text-black">
+                  {categoriasSeleccionadas.length > 0 ? (
+                    categoriasSeleccionadas.map((cat: any) => (
+                      <li key={cat.id}>
+                        <Link href={`/newarrivals?categoria=${encodeURIComponent(cat.nombre)}`}>
+                          {cat.nombre}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">Cargando...</li>
+                  )}
+                </ul>
+              </div>
+            </li>
           </ul>
+
+                  
 
           <div className="flex gap-4 text-xl">
             <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-gray-400">

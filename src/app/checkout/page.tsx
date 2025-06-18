@@ -90,7 +90,24 @@ export default function CheckoutPage() {
 
     try {
       const res = await axios.post('https://sg-studio-backend.onrender.com/ordenes', orden)
-      alert('¡Orden creada con éxito!')
+
+      alert('¡Gracias por tu compra! 🛍️\n\nUna asesora comercial se pondrá en contacto contigo en breve para coordinar la entrega. 📞✨')
+
+      const numeroWsp = '51913537327';
+
+
+      const mensaje = encodeURIComponent(
+        ` *NUEVA ORDEN SG STUDIO* 🛍️\n\n` +
+        ` *Cliente:* ${orden.nombre} ${orden.apellido}\n *Email:* ${orden.email}\n *Teléfono:* ${orden.telefono}\n\n` +
+        ` *Envío a:* ${orden.direccion}, ${orden.distrito}, ${orden.provincia}, ${orden.departamento}, ${orden.pais}\n *Referencia:* ${orden.referencia}\n *Método de Envío:* ${orden.metodoEnvio}\n\n` +
+        ` *Productos:*\n` +
+        orden.items.map((item: any, i: number) =>
+          `${i + 1}. Producto ID: ${item.productoId}\n   - Cantidad: ${item.cantidad}\n   - Precio unitario: S/. ${item.precio}`
+        ).join('\n\n') +
+        `\n\n *Subtotal:* S/. ${orden.subtotal}\n *Envío:* S/. ${orden.envio}\n *Total:* S/. ${orden.total}`
+      )
+
+      window.open(`https://wa.me/${numeroWsp}?text=${mensaje}`, '_blank')
 
       const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
       if (isLoggedIn && usuario?.id) {
@@ -101,10 +118,14 @@ export default function CheckoutPage() {
         localStorage.removeItem('carrito')
       }
 
+      // 4. Reset y redirección
       setCarrito(null)
+      router.push('/usuario/perfil')
+
     } catch (err: any) {
       alert('Error al crear la orden: ' + JSON.stringify(err.response?.data || err.message))
     }
+
   }
 
   if (loading) return <p className="text-center mt-10">Cargando...</p>

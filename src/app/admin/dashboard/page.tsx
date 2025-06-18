@@ -11,6 +11,7 @@ import ListarProductosAdmin from './components/ListarProductosAdmin';
 import CrearCategoriaForm from './components/CrearCategoriaForm';
 import ListaCategorias from './components/ListaCategorias';
 import VistaOrdenes from './components/VistaOrdenes';
+import ListarReclamos from './components/ListarReclamos';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -53,7 +54,7 @@ export default function AdminDashboard() {
         {vista === 'dashboard' && <ResumenDashboard />}
         {vista === 'usuarios' && (
           <>
-            <h3 className="text-2xl font-bold mb-4">Lista de Usuarios</h3>
+            <h3 className="text-2xl font-bold mb-4">Gestión de Usuarios</h3>
             <ListarUsuarios />
           </>
         )}
@@ -105,6 +106,13 @@ export default function AdminDashboard() {
             <VistaOrdenes />
           </>
         )}
+        {vista === 'reclamos' && (
+          <>
+            <h3 className="text-2xl font-bold mb-4">Reclamos de Clientes</h3>
+            <ListarReclamos />
+          </>
+        )}
+
 
       </main>
     </div>

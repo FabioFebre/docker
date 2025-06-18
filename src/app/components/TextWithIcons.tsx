@@ -29,7 +29,7 @@ const beneficios: Beneficio[] = [
   {
     icon: 'CreditCard',
     titulo: 'Pagá en cuotas',
-    descripcion: 'Aceptamos hasta 6 cuotas sin interés.',
+    descripcion: 'Aceptamos todos los métodos de pago.',
   },
   {
     icon: 'ShieldCheck',

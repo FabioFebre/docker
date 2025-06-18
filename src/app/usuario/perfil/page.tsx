@@ -39,6 +39,10 @@ export default function PerfilUsuario() {
   const [mensajeCompra, setMensajeCompra] = useState('');
   const [comprando, setComprando] = useState(false);
   const [ordenes, setOrdenes] = useState<Orden[]>([]);
+  const [mensajeReclamo, setMensajeReclamo] = useState('');
+  const [ordenSeleccionada, setOrdenSeleccionada] = useState<Orden | null>(null);
+  const [mostrarFormularioReclamo, setMostrarFormularioReclamo] = useState(false);
+
 
   const router = useRouter();
  
@@ -257,21 +261,43 @@ export default function PerfilUsuario() {
           ) : (
             <div className="space-y-4">
               {ordenes.map((orden) => (
-                <div key={orden.id} className="p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition relative">
+                <div
+                  key={orden.id}
+                  className="p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition relative"
+                >
+                 
+                 {orden.estado === 'completado' ? (
+                  <button
+                    onClick={() => {
+                      setOrdenSeleccionada(orden);
+                      setMostrarFormularioReclamo(true);
+                    }}
+                    className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 text-sm"
+                  >
+                    Reclamos o quejas
+                  </button>
+                ) : (
                   <button
                     onClick={() => handleEliminarOrden(orden.id)}
                     className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"
                   >
                     Eliminar
                   </button>
+                )}
+
+
                   <p className="text-sm text-gray-600">Orden #{orden.id}</p>
                   <p className="text-lg font-semibold">Total: PEN {orden.total.toFixed(2)}</p>
-                  <p className="text-sm text-gray-500">Estado: <span className="font-medium">{orden.estado}</span></p>
-                  <p className="text-sm text-gray-400">Fecha: {new Date(orden.createdAt).toLocaleString()}</p>
+                  <p className="text-sm text-gray-500">
+                    Estado: <span className="font-medium">{orden.estado}</span>
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    Fecha: {new Date(orden.createdAt).toLocaleString()}
+                  </p>
                 </div>
-
               ))}
             </div>
+
           )}
         </div>
 
@@ -290,6 +316,71 @@ export default function PerfilUsuario() {
           </div>
         </div>
       </div>
+
+      {mostrarFormularioReclamo && ordenSeleccionada && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Enviar reclamo para la orden #{ordenSeleccionada.id}</h2>
+            <textarea
+              value={mensajeReclamo}
+              onChange={(e) => setMensajeReclamo(e.target.value)}
+              className="w-full h-32 border border-gray-300 p-2 rounded"
+              placeholder="Escribe aquí tu reclamo o solicitud..."
+            />
+            <div className="mt-4 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setMostrarFormularioReclamo(false);
+                  setMensajeReclamo('');
+                  setOrdenSeleccionada(null);
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  if (!mensajeReclamo.trim()) {
+                    alert('El mensaje no puede estar vacío.');
+                    return;
+                  }
+
+                  try {
+                    const res = await fetch('https://sg-studio-backend.onrender.com/reclamos', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        usuarioId: usuario?.id,
+                        ordenId: ordenSeleccionada.id,
+                        mensaje: mensajeReclamo,
+                      }),
+                    });
+
+                    if (!res.ok) {
+                      const err = await res.json();
+                      throw new Error(err.error || 'Error al enviar reclamo');
+                    }
+
+                    alert('Tu reclamo ha sido registrado correctamente.');
+                    setMostrarFormularioReclamo(false);
+                    setMensajeReclamo('');
+                    setOrdenSeleccionada(null);
+                  } catch (error) {
+                    console.error(error);
+                    alert('Error al registrar el reclamo.');
+                  }
+                }}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Enviar reclamo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 }

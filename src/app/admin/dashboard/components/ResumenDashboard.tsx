@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Package, Layers3, Users } from 'lucide-react';
-import GraficoOrdenes from './GraficoOrdenes'; // 👈 Importa el gráfico
+import { Package, Layers3, Users,AlertCircle  } from 'lucide-react';
+import GraficoOrdenes from './GraficoOrdenes';
+
 
 export default function ResumenDashboard() {
   const [productos, setProductos] = useState(0);
   const [categorias, setCategorias] = useState(0);
   const [cantidadUsuarios, setCantidadUsuarios] = useState(0);
+  const [cantidadReclamos, setCantidadReclamos] = useState(0);
+
 
   useEffect(() => {
     fetch('https://sg-studio-backend.onrender.com/productos')
@@ -22,6 +25,11 @@ export default function ResumenDashboard() {
       .then(res => res.json())
       .then(data => setCantidadUsuarios(data.length))
       .catch(err => console.error('Error al obtener usuarios:', err));
+
+    fetch('https://sg-studio-backend.onrender.com/reclamos')
+      .then(res => res.json())
+      .then(data => setCantidadReclamos(data.length))
+      .catch(err => console.error('Error al obtener reclamos:', err));
   }, []);
 
   return (
@@ -36,6 +44,7 @@ export default function ResumenDashboard() {
         <Card titulo="Productos" valor={productos} Icon={Package} />
         <Card titulo="Categorías" valor={categorias} Icon={Layers3} />
         <Card titulo="Usuarios" valor={cantidadUsuarios} Icon={Users} />
+        <Card titulo="Reclamos" valor={cantidadReclamos} Icon={AlertCircle} />
       </div>
 
       {/* Gráfico de ordenes */}

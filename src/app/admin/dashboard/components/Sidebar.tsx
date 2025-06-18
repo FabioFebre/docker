@@ -1,6 +1,6 @@
 'use client';
 import {
-  Package, Tags, LogOut, LayoutList, Layers3, PlusCircle,
+  Package, Tags, LogOut, LayoutList, Layers3, PlusCircle,AlertCircle,
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -22,6 +22,7 @@ export default function Sidebar({
             { label: 'Crear Producto', icon: PlusCircle, view: 'crear-producto' },
             { label: 'Usuarios', icon: Layers3, view: 'usuarios' },
             { label: 'Órdenes', icon: Package, view: 'ordenes' }, 
+            { label: 'Reclamos', icon: AlertCircle, view: 'reclamos' },
           ].map(({ label, icon: Icon, view }) => (
             <button
               key={view}
