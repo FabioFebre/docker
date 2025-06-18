@@ -50,8 +50,11 @@ export default function ListarProductosAdmin() {
 
   const abrirModalEditar = (producto) => {
     setProductoEditando(producto);
+
+    // Limpiar URLs de imágenes previas
     nuevaImagenesURLs.current.forEach((url) => URL.revokeObjectURL(url));
     nuevaImagenesURLs.current = [];
+
     setNuevaImagenes([]);
     setModalAbierto(true);
   };
@@ -59,6 +62,8 @@ export default function ListarProductosAdmin() {
   const cerrarModal = () => {
     setModalAbierto(false);
     setProductoEditando(null);
+
+    // Liberar URLs creadas
     nuevaImagenesURLs.current.forEach((url) => URL.revokeObjectURL(url));
     nuevaImagenesURLs.current = [];
     setNuevaImagenes([]);
@@ -72,83 +77,136 @@ export default function ListarProductosAdmin() {
     }));
   };
 
+  const handleImagenChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 6);
+
+    nuevaImagenesURLs.current.forEach((url) => URL.revokeObjectURL(url));
+    nuevaImagenesURLs.current = files.map((file) => URL.createObjectURL(file));
+
+    setNuevaImagenes(files);
+  };
+
   const handleGuardar = async () => {
     try {
       let bodyData = { ...productoEditando };
+
+     
       const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${productoEditando.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(bodyData),
       });
-      if (!res.ok) throw new Error('Error al guardar el producto');
+
+      if (!res.ok) {
+        throw new Error('Error al guardar el producto');
+      }
+
       const productoActualizado = await res.json();
+
       setProductos((prev) =>
         prev.map((p) => (p.id === productoActualizado.id ? productoActualizado : p))
       );
+
       cerrarModal();
     } catch (error) {
       alert(error.message);
     }
   };
 
-  if (loading) return <p className="text-center text-lg text-gray-600">Cargando productos...</p>;
+  if (loading)
+    return <p className="text-center text-lg text-gray-600">Cargando productos...</p>;
   if (error) return <p className="text-center text-red-600">{error}</p>;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gray-800 text-white">
-          <tr>
-            <th className="px-4 py-2 text-left">Imagen</th>
-            <th className="px-4 py-2 text-left">Nombre</th>
-            <th className="px-4 py-2 text-left">Precio</th>
-            <th className="px-4 py-2 text-left">Talla</th>
-            <th className="px-4 py-2 text-left">Color</th>
-            <th className="px-4 py-2 text-left">Cantidad</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {productos.map((producto) => (
-            <tr key={producto.id} className="border-t">
-              <td className="px-4 py-2">
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {productos.map(
+          ({
+            id,
+            imagen,
+            nombre,
+            precio,
+            descripcion,
+            color,
+            talla,
+            cantidad,
+            composicion,
+            info,
+            cuidados,
+            seleccionado,
+            categoria,
+          }) => (
+            <div
+              key={id}
+              className="bg-white rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-1 overflow-hidden"
+            >
+              <div className="w-full h-48 bg-gray-100">
                 <img
-                  src={Array.isArray(producto.imagen) && producto.imagen.length > 0 ? producto.imagen[0] : '/placeholder.jpg'}
-                  alt="imagen"
-                  className="w-16 h-16 object-cover rounded"
+                  src={Array.isArray(imagen) && imagen.length > 0 ? imagen[0] : '/placeholder.jpg'}
+                  alt="Imagen producto"
+                  className="w-full h-full object-cover"
                 />
-              </td>
-              <td className="px-4 py-2">{producto.nombre}</td>
-              <td className="px-4 py-2">${producto.precio}</td>
-              <td className="px-4 py-2">{producto.talla}</td>
-              <td className="px-4 py-2">{producto.color}</td>
-              <td className="px-4 py-2">{producto.cantidad}</td>
-              <td className="px-4 py-2 space-x-2">
-                <button
-                  onClick={() => abrirModalEditar(producto)}
-                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Editar
-                </button>
-                <button
-                  onClick={() => handleEliminar(producto.id)}
-                  disabled={eliminando === producto.id}
-                  className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-                >
-                  {eliminando === producto.id ? 'Eliminando...' : 'Eliminar'}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+              <div className="p-4 text-left">
+                <h4 className="text-lg font-semibold text-gray-900 mb-1">{nombre}</h4>
+                <p className="text-gray-700 font-bold mb-2">${precio}</p>
+                {descripcion && (
+                  <p className="text-gray-600 text-sm mb-1 truncate">{descripcion}</p>
+                )}
+                <div className="text-gray-600 text-sm space-y-0.5 mb-3">
+                  {categoria?.nombre && <p>Categoría: {categoria.nombre}</p>}
+                  {color && <p>Color: {color}</p>}
+                  {talla && <p>Talla: {talla}</p>}
+                  {cantidad !== undefined && <p>Cantidad: {cantidad}</p>}
+                  {composicion && <p>Composición: {composicion}</p>}
+                  {info && <p>Info: {info}</p>}
+                  {cuidados && <p>Cuidados: {cuidados}</p>}
+                  {seleccionado && <p>Seleccionado {seleccionado}</p>}
 
-      {/* Modal de edición reutilizado */}
+                </div>
+                <div className="flex justify-between mt-4">
+                  <button
+                    onClick={() =>
+                      abrirModalEditar({
+                        id,
+                        imagen,
+                        nombre,
+                        precio,
+                        descripcion,
+                        color,
+                        talla,
+                        cantidad,
+                        composicion,
+                        info,
+                        cuidados,
+                        seleccionado,
+                      })
+                    }
+                    className="px-3 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition text-sm w-1/2 mr-1"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleEliminar(id)}
+                    disabled={eliminando === id}
+                    className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-sm w-1/2 ml-1 disabled:opacity-50"
+                  >
+                    {eliminando === id ? 'Eliminando...' : 'Eliminar'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        )}
+      </div>
       {modalAbierto && productoEditando && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-md w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4">Editar Producto</h2>
-           <form
+        <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-xl">
+            <h2 className="text-2xl font-semibold mb-4 text-gray-900">Editar Producto</h2>
+
+            <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleGuardar();
@@ -309,6 +367,7 @@ export default function ListarProductosAdmin() {
           </div>
         </div>
       )}
-    </div>
+
+    </>
   );
 }
