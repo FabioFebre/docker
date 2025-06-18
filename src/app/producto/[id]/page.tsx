@@ -32,9 +32,23 @@ export default function ProductoDetalle() {
       setLoading(true);
       const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${id}`);
       if (!res.ok) throw new Error('Error al obtener el producto');
+      
       const data = await res.json();
-      setProducto(data);
-      setImagenSeleccionada(data.imagen?.[0] || null);
+
+      // Función para ajustar URL si es relativa
+      const ajustarURL = (url: string) => {
+        if (!url.startsWith('http')) {
+          return `https://sg-studio-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
+        }
+        return url;
+      };
+
+      const imagenesAjustadas = Array.isArray(data.imagen)
+        ? data.imagen.map(ajustarURL)
+        : [];
+
+      setProducto({ ...data, imagen: imagenesAjustadas });
+      setImagenSeleccionada(imagenesAjustadas?.[0] || null);
       setCantidad(1);
     } catch (error: any) {
       setError(error.message);
@@ -130,8 +144,10 @@ export default function ProductoDetalle() {
                 alt={`Vista ${index + 1}`}
                 width={60}
                 height={80}
+                unoptimized
                 className="object-cover"
               />
+
             </button>
           ))}
         </div>
@@ -144,18 +160,20 @@ export default function ProductoDetalle() {
           onMouseLeave={() => setIsHovering(false)}
         >
           {imagenSeleccionada && (
-            <Image
-              src={imagenSeleccionada}
-              alt="Imagen seleccionada"
-              fill
-              style={{
-                objectFit: 'contain',
-                transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                transform: isHovering ? 'scale(2)' : 'scale(1)',
-                transition: 'transform 0.2s ease',
-              }}
-              className="rounded-lg pointer-events-none select-none"
-            />
+          <Image
+            src={imagenSeleccionada}
+            alt="Imagen seleccionada"
+            fill
+            unoptimized
+            style={{
+              objectFit: 'contain',
+              transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+              transform: isHovering ? 'scale(2)' : 'scale(1)',
+              transition: 'transform 0.2s ease',
+            }}
+            className="rounded-lg pointer-events-none select-none"
+          />
+
           )}
         </div>
 
@@ -240,6 +258,7 @@ export default function ProductoDetalle() {
                       src={item.imagen[0]}
                       alt={item.nombre}
                       fill
+                      unoptimized
                       style={{ objectFit: 'cover' }}
                       className="rounded"
                     />
