@@ -3,18 +3,13 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 export default function NewArrivalsPage() {
   const searchParams = useSearchParams()
-  const router = useRouter()
-
   const categoriaSeleccionada = searchParams.get('categoria') || ''
-  const precioMaxParam = searchParams.get('precioMax')
   const [productos, setProductos] = useState<any[]>([])
   const [categorias, setCategorias] = useState<any[]>([])
-
-  const precioMax = Number(precioMaxParam) || 100
 
   useEffect(() => {
     const fetchSeleccionados = async () => {
@@ -41,16 +36,8 @@ export default function NewArrivalsPage() {
 
   const productosFiltrados = productos.filter((p: any) =>
     (!categoriaSeleccionada || p.categoria?.nombre?.toLowerCase() === categoriaSeleccionada.toLowerCase()) &&
-    p.precio <= precioMax &&
     Array.isArray(p.imagen) && p.imagen.length > 0
   )
-
-  const handlePrecioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nuevoPrecio = Number(e.target.value)
-    const query = new URLSearchParams(searchParams.toString())
-    query.set('precioMax', nuevoPrecio.toString())
-    router.push(`/newarrivals?${query.toString()}`)
-  }
 
   return (
     <main className="bg-white min-h-screen p-4 pt-24 flex">
@@ -59,7 +46,7 @@ export default function NewArrivalsPage() {
         <ul className="space-y-2 mb-6">
           <li>
             <Link
-              href={`/newarrivals?precioMax=${precioMax}`}
+              href={`/newarrivals`}
               className={`font-[Beige] block text-left w-full ${!categoriaSeleccionada ? 'font-bold text-black' : 'text-gray-600'}`}
             >
               Todas
@@ -68,7 +55,7 @@ export default function NewArrivalsPage() {
           {categorias.map((cat: any) => (
             <li key={cat.id}>
               <Link
-                href={`/newarrivals?categoria=${encodeURIComponent(cat.nombre)}&precioMax=${precioMax}`}
+                href={`/newarrivals?categoria=${encodeURIComponent(cat.nombre)}`}
                 className={`font-[Montserrat] block text-sm text-left w-full ${categoriaSeleccionada === cat.nombre ? 'font-bold text-black' : 'text-gray-600'}`}
               >
                 {cat.nombre}
@@ -76,17 +63,6 @@ export default function NewArrivalsPage() {
             </li>
           ))}
         </ul>
-
-        <h2 className="font-[Beige] text-lg font-bold mb-2 text-black">Precio Máximo: {precioMax} PEN</h2>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={precioMax}
-          onChange={handlePrecioChange}
-          className="w-full appearance-none bg-gray-200 rounded h-2 transition-all duration-300 ease-in-out accent-black"
-        />
       </aside>
 
       <section className="flex-1 pl-6">
@@ -118,7 +94,7 @@ export default function NewArrivalsPage() {
                   </div>
                   <div className="p-4 text-center">
                     <p className="text-sm font-medium text-gray-700 truncate">{producto.nombre}</p>
-                    <p className="text-lg font-bold text-black">S/ {producto.precio}</p>
+                    <p className="text-lg text-black">S/ {producto.precio}</p>
                   </div>
                 </div>
               </Link>
