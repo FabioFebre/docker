@@ -53,7 +53,7 @@ const WhatsappBubble = () => {
         </div>
         <div className={styles.popupBottom}>
           <a
-            href="https://wa.me/51957211671?text=Hola%20me%20gustaría%20más%20información"
+            href="https://wa.me/51953506401?text=Hola%20me%20gustaría%20más%20información"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.popupContact}
@@ -65,7 +65,7 @@ const WhatsappBubble = () => {
             />
             <div className={styles.popupContactInfo}>
               <span className={styles.contactName}>Atención al cliente</span>
-              <span className={styles.contactNumber}>+51 957 211 671</span>
+              <span className={styles.contactNumber}>+51 953 506 401</span>
             </div>
           </a>
         </div>

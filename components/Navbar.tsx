@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaUser, FaSearch, FaShoppingBag, FaTimes, FaTrash } from 'react-icons/fa';
+import { FaUser, FaSearch, FaShoppingBag, FaTimes, FaTrash, FaBars, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
 
 type Categoria = { id: number; nombre: string; slug?: string };
 type Producto = { id: number; nombre: string; imagen: string[]; precio: number };
@@ -24,6 +24,9 @@ export default function Navbar() {
   const cartRef = useRef<HTMLDivElement>(null);
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([])
   const router = useRouter();
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [submenuAbierto, setSubmenuAbierto] = useState(false);
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -205,6 +208,7 @@ export default function Navbar() {
     });
   };
 
+  
   const bgClass = scrolled || hovered || showSearch
     ? 'bg-white text-black shadow-md border-b border-gray-300'
     : 'bg-transparent text-white border-b border-transparent';
@@ -214,14 +218,112 @@ export default function Navbar() {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <div className="flex justify-between items-center">
+        {/* Responsive - Barra para móviles */}
+        <div className="md:hidden flex justify-between items-center">
+          <button
+            onClick={() => setMenuAbierto(true)}
+            aria-label="Menú"
+            className="text-2xl hover:text-gray-500"
+          >
+            <FaBars />
+          </button>
+          <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-colors duration-300">
+            SG STUDIO
+          </Link>
+          <div className="flex gap-4 text-xl">
+            <button ref={buttonRef} onClick={() => setShowSearch(v => !v)} aria-label="Buscar" className="hover:text-gray-400">
+              <FaSearch />
+            </button>
+            <button onClick={() => setShowCart(true)} aria-label="Carrito" className="hover:text-gray-400 relative w-6 h-6">
+              <FaShoppingBag />
+              {carrito.length > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-gray-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {carrito.reduce((t, i) => t + i.cantidad, 0)}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Menú lateral animado y scrollable */}
+        <div
+          className={`fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 md:hidden
+            ${menuAbierto ? 'translate-x-0' : '-translate-x-full'}`}
+        >
+          <div className="h-full flex flex-col">
+            {/* Encabezado */}
+            <div className="flex justify-end items-center p-6 border-b">
+              <button
+                onClick={() => setMenuAbierto(false)}
+                className="text-xl hover:text-gray-500"
+                aria-label="Cerrar"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Contenido con scroll */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-3">
+              {/* WOMAN con subcategorías */}
+              <div>
+                <button
+                  onClick={() => setSubmenuAbierto(!submenuAbierto)}
+                  className="flex justify-between items-center w-full text-left text-black font-medium text-sm hover:text-gray-700 transition-colors"
+                >
+                  WOMAN
+                  <span className="ml-2 text-base">
+                    {submenuAbierto ? <FaChevronLeft /> : <FaChevronRight />}
+                  </span>
+                </button>
+
+                <ul
+                  className={`mt-2 ml-2 space-y-2 text-sm text-gray-700 transition-all duration-500 ease-out
+                    ${submenuAbierto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
+                >
+                  {categorias.map((c, i) => (
+                    <li
+                      key={c.id}
+                      className="transition-opacity duration-300"
+                      style={{ transitionDelay: `${i * 40}ms` }}
+                    >
+                      <Link
+                        href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}
+                        className="block hover:text-black"
+                        onClick={() => setMenuAbierto(false)}
+                      >
+                        {c.nombre}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* PERFIL */}
+              <button
+                onClick={() => {
+                  handleUserClick();
+                  setMenuAbierto(false);
+                }}
+                className="block w-full text-left text-sm font-medium text-black hover:text-gray-700 transition-opacity duration-300"
+              >
+                Perfil
+              </button>
+            </div>
+          </div>
+        </div>
+        {/* ------------------------- */}
+        <div className="hidden md:flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-colors duration-300">
             SG STUDIO
           </Link>
           <ul className="flex gap-6 text-sm font-medium items-center">
             {/* WOMAN */}
             <li className="relative group">
-              <Link href="/woman" className="underline-hover text-black hover:text-gray-600 transition">
+              <Link href="/woman" className={`underline-hover transition ${
+                hovered || scrolled
+                  ? 'text-black hover:text-gray-600'
+                  : 'text-white hover:text-gray-300'
+              }`}>
                 WOMAN
               </Link>
               <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
@@ -256,7 +358,11 @@ export default function Navbar() {
 
             {/* NEW ARRIVALS */}
             <li className="relative group">
-              <Link href="/newarrivals" className="underline-hover text-black hover:text-gray-600 transition">
+              <Link href="/newarrivals" className={`underline-hover transition ${
+                  hovered || scrolled
+                    ? 'text-black hover:text-gray-600'
+                    : 'text-white hover:text-gray-300'
+                }`}>
                 NEW ARRIVALS
               </Link>
               <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
