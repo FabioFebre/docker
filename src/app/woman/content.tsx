@@ -14,6 +14,8 @@ export default function WomanContent() {
   const [vista, setVista] = useState<'grande' | 'compacta' | 'lista'>('grande')
   const [categoriasAbiertas, setCategoriasAbiertas] = useState(false)
 
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<string[]>([]) // nuevo
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,28 +34,43 @@ export default function WomanContent() {
   }, [])
 
   const productosFiltrados = productos.filter(
-    (p: any) =>
-      (!categoriaSeleccionada || p.categoria?.nombre?.toLowerCase() === categoriaSeleccionada.toLowerCase()) &&
-      Array.isArray(p.imagen) &&
-      p.imagen.length > 0
+     (p: any) =>
+    (categoriasSeleccionadas.length === 0 ||
+      categoriasSeleccionadas.includes(p.categoria?.nombre)) &&
+    Array.isArray(p.imagen) &&
+    p.imagen.length > 0
   )
 
+  const toggleCategoria = (nombre: string) => {
+    setCategoriasSeleccionadas((prev) =>
+      prev.includes(nombre)
+        ? prev.filter((cat) => cat !== nombre)
+        : [...prev, nombre]
+    )
+  }
+
   const renderVista = () => {
-    const columnas =
-      vista === 'compacta' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+    let columnas = ''
+    if (vista === 'lista') {
+      columnas = 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+    } else if (vista === 'compacta') {
+      columnas = 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+    } else {
+      columnas = 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+    }
 
     return (
       <div className={`grid ${columnas} gap-6`}>
         {productosFiltrados.map((producto: any) => (
           <Link key={producto.id} href={`/producto/${producto.id}`} className="group block">
             <div className="bg-white border rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-              <div className="relative w-full h-72">
+              <div className="relative w-full h-150">
                 <Image
                   src={producto.imagen[0]}
                   alt={producto.nombre}
                   fill
                   unoptimized
-                  className={`object-cover transition-opacity duration-300 ${
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                     producto.imagen[1] ? 'group-hover:opacity-0' : ''
                   }`}
                 />
@@ -63,7 +80,7 @@ export default function WomanContent() {
                     alt={`${producto.nombre} alternativa`}
                     fill
                     unoptimized
-                    className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   />
                 )}
 
@@ -94,30 +111,26 @@ export default function WomanContent() {
         </div>
         {categoriasAbiertas && (
           <ul className="space-y-2 mt-3">
-            <li>
-              <Link
-                href={`/woman`}
-                className={`block text-sm font-[Montserrat] ${!categoriaSeleccionada ? 'font-bold text-black' : 'text-gray-600'}`}
-              >
-                Todas
-              </Link>
-            </li>
             {categorias.map((cat: any) => {
               const cantidad = productos.filter((p: any) => p.categoria?.nombre === cat.nombre).length
+              const isChecked = categoriasSeleccionadas.includes(cat.nombre)
+
               return (
                 <li key={cat.id}>
-                  <Link
-                    href={`/woman?categoria=${encodeURIComponent(cat.nombre)}`}
-                    className={`flex justify-between items-center text-sm font-[Montserrat] ${
-                      categoriaSeleccionada === cat.nombre ? 'font-bold text-black' : 'text-gray-600'
-                    }`}
-                  >
+                  <label className="flex justify-between items-center text-sm font-[Montserrat] cursor-pointer">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 border border-gray-400 rounded-sm" />
-                      <span>{cat.nombre}</span>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => toggleCategoria(cat.nombre)}
+                        className="accent-black w-4 h-4"
+                      />
+                      <span className={isChecked ? 'text-black font-bold' : 'text-gray-600'}>
+                        {cat.nombre}
+                      </span>
                     </div>
                     <span className="text-xs text-gray-400">({cantidad})</span>
-                  </Link>
+                  </label>
                 </li>
               )
             })}

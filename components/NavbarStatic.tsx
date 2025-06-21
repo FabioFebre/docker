@@ -528,9 +528,9 @@ const bgClass = scrolled || hovered || showSearch
         router.push('/checkout');
         setShowCart(false);
       }}
-      className="w-full py-2 text-white bg-pink-600 hover:bg-pink-700 rounded text-sm font-semibold transition"
+      className="btn-animated w-full rounded"
     >
-      Ir al Checkout
+      Seguir con la compra
     </button>
   </div>
 )}
