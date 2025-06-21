@@ -81,7 +81,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="font-[Montserrat] w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition duration-200"
+            className="w-full btn-animated"
           >
             Iniciar sesión
           </button>

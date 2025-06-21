@@ -3,12 +3,81 @@
 import { useEffect, useState, FormEvent } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 export default function CheckoutPage() {
   const [carrito, setCarrito] = useState<any>(null)
   const [usuario, setUsuario] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+
+  const [ubigeos, setUbigeos] = useState<any[]>([])
+  const [departamentos, setDepartamentos] = useState<string[]>([])
+  const [provincias, setProvincias] = useState<string[]>([])
+  const [distritos, setDistritos] = useState<string[]>([])
+  const [aceptaTerminos, setAceptaTerminos] = useState(false)
+
+  const [form, setForm] = useState({
+    telefono: '',
+    pais: 'Perú',
+    departamento: '',
+    provincia: '',
+    distrito: '',
+    direccion: '',
+    referencia: '',
+    metodoEnvio: 'delivery'
+  })
+
+  useEffect(() => {
+    fetch('https://free.e-api.net.pe/ubigeos.json', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(raw => {
+        const lista: any[] = []
+
+        Object.entries(raw).forEach(([departamento, provincias]) => {
+          Object.entries(provincias as object).forEach(([provincia, distritos]) => {
+            Object.keys(distritos as object).forEach((distrito) => {
+              lista.push({
+                departamento,
+                provincia,
+                distrito
+              })
+            })
+          })
+        })
+
+        setUbigeos(lista)
+        const deps = Array.from(new Set(lista.map(u => u.departamento))).filter(Boolean)
+        setDepartamentos(deps)
+      })
+  }, [])
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+
+    if (name === 'departamento') {
+      const provs = ubigeos
+        .filter(u => u.departamento === value)
+        .map(u => u.provincia)
+      setProvincias(Array.from(new Set(provs)))
+      setDistritos([])
+      setForm(prev => ({ ...prev, provincia: '', distrito: '', departamento: value }))
+    }
+
+    if (name === 'provincia') {
+      const dists = ubigeos
+        .filter(u => u.departamento === form.departamento && u.provincia === value)
+        .map(u => u.distrito)
+      setDistritos(Array.from(new Set(dists)))
+      setForm(prev => ({ ...prev, distrito: '', provincia: value }))
+    }
+
+    if (name === 'distrito') {
+      setForm(prev => ({ ...prev, distrito: value }))
+    }
+  }
 
   useEffect(() => {
     const fetchCarrito = async () => {
@@ -40,21 +109,6 @@ export default function CheckoutPage() {
 
     fetchCarrito()
   }, [])
-
-  const [form, setForm] = useState({
-    telefono: '',
-    pais: 'Perú',
-    departamento: '',
-    provincia: '',
-    distrito: '',
-    direccion: '',
-    referencia: '',
-    metodoEnvio: 'delivery'
-  })
-
-  const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
 
   const crearOrden = async (e: FormEvent) => {
     e.preventDefault()
@@ -89,13 +143,11 @@ export default function CheckoutPage() {
     }
 
     try {
-      const res = await axios.post('https://sg-studio-backend.onrender.com/ordenes', orden)
+      await axios.post('https://sg-studio-backend.onrender.com/ordenes', orden)
 
       alert('¡Gracias por tu compra! 🛍️\n\nUna asesora comercial se pondrá en contacto contigo en breve para coordinar la entrega. 📞✨')
 
-      const numeroWsp = '51913537327';
-
-
+      const numeroWsp = '51913537327'
       const mensaje = encodeURIComponent(
         ` *NUEVA ORDEN SG STUDIO* 🛍️\n\n` +
         ` *Cliente:* ${orden.nombre} ${orden.apellido}\n *Email:* ${orden.email}\n *Teléfono:* ${orden.telefono}\n\n` +
@@ -118,14 +170,11 @@ export default function CheckoutPage() {
         localStorage.removeItem('carrito')
       }
 
-      // 4. Reset y redirección
       setCarrito(null)
       router.push('/usuario/perfil')
-
     } catch (err: any) {
       alert('Error al crear la orden: ' + JSON.stringify(err.response?.data || err.message))
     }
-
   }
 
   if (loading) return <p className="text-center mt-10">Cargando...</p>
@@ -133,74 +182,100 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-20">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
-        {/* Formulario de envío */}
         <form onSubmit={crearOrden} className="bg-white p-8 rounded-lg shadow space-y-4">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Datos de Envío</h2>
-          <input
-            name="telefono"
-            value={form.telefono}
-            onChange={handleChange}
-            placeholder="Teléfono"
-            required
-            className="w-full p-3 text-black border rounded"
+
+          <PhoneInput
+            country={'pe'}
+            onlyCountries={['pe']}
+            value={`51${form.telefono}`}
+            onChange={(value) => {
+              const phoneWithoutPrefix = value.startsWith('51') ? value.slice(2) : value
+              if (/^\d{0,9}$/.test(phoneWithoutPrefix)) {
+                setForm(prev => ({ ...prev, telefono: phoneWithoutPrefix }))
+              }
+            }}
+            enableSearch={false}
+            countryCodeEditable={false}
+            disableDropdown={true}
+            inputProps={{
+              name: 'telefono',
+              required: true,
+              autoFocus: true,
+            }}
+            inputStyle={{
+              width: '100%',
+              height: '48px',
+              fontSize: '16px',
+              borderRadius: '6px',
+              paddingLeft: '48px',
+              color: 'black',
+            }}
+            containerStyle={{
+              width: '100%',
+            }}
+            specialLabel=""
           />
-          <input
-            name="departamento"
-            value={form.departamento}
-            onChange={handleChange}
-            placeholder="Departamento"
-            required
-            className="w-full p-3 text-black border rounded"
-          />
-          <input
-            name="provincia"
-            value={form.provincia}
-            onChange={handleChange}
-            placeholder="Provincia"
-            required
-            className="w-full p-3 text-black border rounded"
-          />
-          <input
-            name="distrito"
-            value={form.distrito}
-            onChange={handleChange}
-            placeholder="Distrito"
-            required
-            className="w-full p-3 text-black border rounded"
-          />
-          <input
-            name="direccion"
-            value={form.direccion}
-            onChange={handleChange}
-            placeholder="Dirección"
-            required
-            className="w-full p-3 text-black border rounded"
-          />
-          <input
-            name="referencia"
-            value={form.referencia}
-            onChange={handleChange}
-            placeholder="Referencia"
-            className="w-full p-3 text-black border rounded"
-          />
-          <select
-            name="metodoEnvio"
-            value={form.metodoEnvio}
-            onChange={handleChange}
-            className="w-full p-3 text-black border rounded"
-          >
+
+          <select name="departamento" value={form.departamento} onChange={handleChange} required className="w-full p-3 text-black border rounded">
+            <option value="">Departamento</option>
+            {departamentos.map(dep => (
+              <option key={dep} value={dep}>{dep}</option>
+            ))}
+          </select>
+
+          <select name="provincia" value={form.provincia} onChange={handleChange} required disabled={!form.departamento} className="w-full p-3 text-black border rounded">
+            <option value="">Provincia</option>
+            {provincias.map(prov => <option key={prov} value={prov}>{prov}</option>)}
+          </select>
+
+          <select name="distrito" value={form.distrito} onChange={handleChange} required disabled={!form.provincia} className="w-full p-3 text-black border rounded">
+            <option value="">Distrito</option>
+            {distritos.map(dist => <option key={dist} value={dist}>{dist}</option>)}
+          </select>
+
+          <input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Dirección" required className="w-full p-3 text-black border rounded" />
+          <input name="referencia" value={form.referencia} onChange={handleChange} placeholder="Referencia" className="w-full p-3 text-black border rounded" />
+
+          <select name="metodoEnvio" value={form.metodoEnvio} onChange={handleChange} className="w-full p-3 text-black border rounded">
             <option value="delivery">Delivery</option>
             <option value="retiro">Retiro en tienda</option>
           </select>
+          <div className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              id="terminos"
+              checked={aceptaTerminos}
+              onChange={() => setAceptaTerminos(!aceptaTerminos)}
+              className="mt-1"
+              required
+            />
+            <label htmlFor="terminos" className="text-sm text-gray-700">
+              Acepto los{' '}
+              <a
+                href="/terminos"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline hover:text-blue-800"
+              >
+                Términos y condiciones
+              </a>{' '}
+              de la tienda
+            </label>
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 rounded hover:bg-gray-800"
+            disabled={!aceptaTerminos}
+            className={`w-full py-3 rounded text-white transition ${
+              aceptaTerminos ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 cursor-not-allowed'
+            }`}
           >
             Confirmar Orden
           </button>
+
         </form>
 
-        {/* Resumen de pedido */}
         <div className="bg-white p-8 rounded-lg shadow space-y-4 h-fit">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Resumen del Pedido</h2>
           {(!carrito?.items || carrito.items.length === 0) ? (
@@ -208,17 +283,11 @@ export default function CheckoutPage() {
           ) : (
             carrito.items.map((item: any, index: number) => (
               <div key={index} className="flex items-center gap-4 border-b pb-4">
-                <img
-                  src={item.producto.imagen[0]}
-                  alt={item.producto.nombre}
-                  className="w-16 h-16 object-cover rounded"
-                />
+                <img src={item.producto.imagen[0]} alt={item.producto.nombre} className="w-16 h-16 object-cover rounded" />
                 <div>
                   <p className="text-sm font-medium text-gray-800">{item.producto.nombre}</p>
                   <p className="text-xs text-gray-500">Talla: {item.talla} | Color: {item.color}</p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    S/. {item.cantidad * item.producto.precio}
-                  </p>
+                  <p className="text-sm font-semibold text-gray-700">S/. {item.cantidad * item.producto.precio}</p>
                 </div>
               </div>
             ))
@@ -226,9 +295,7 @@ export default function CheckoutPage() {
 
           {carrito?.items?.length > 0 && (
             <div className="mt-4 text-right">
-              <p className="text-lg font-semibold">
-                Total: S/. {carrito.items.reduce((total: number, item: any) => total + item.cantidad * item.producto.precio, 0) + 10}
-              </p>
+              <p className="text-lg text-black font-semibold">Total: S/. {carrito.items.reduce((total: number, item: any) => total + item.cantidad * item.producto.precio, 0) + 10}</p>
               <p className="text-sm text-gray-500">Incluye envío: S/. 10</p>
             </div>
           )}

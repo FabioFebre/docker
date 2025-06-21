@@ -54,27 +54,27 @@ export default function ListarReclamos() {
   }
 
   return (
-    <section className="space-y-6">
-      <h2 className="text-2xl font-bold"></h2>
+    <section className="space-y-6 px-6">
+      <h2 className="text-2xl font-bold text-black">Reclamos Registrados</h2>
       <ul className="space-y-4">
         {reclamos.map((reclamo) => (
           <li
             key={reclamo.id}
-            className="bg-white p-5 rounded shadow-md border border-gray-200 hover:shadow-lg transition relative"
+            className="bg-white border border-black rounded p-4 transition hover:shadow-md"
           >
-            <div className="space-y-1 text-sm">
+            <div className="text-sm space-y-1 text-black">
               <p><strong>Reclamo ID:</strong> {reclamo.id}</p>
               <p><strong>Usuario ID:</strong> {reclamo.usuarioId}</p>
               <p><strong>Orden ID:</strong> {reclamo.ordenId}</p>
               <p><strong>Mensaje:</strong> {reclamo.mensaje}</p>
-              <p><strong>Estado:</strong> <span className="text-blue-600 font-medium">{reclamo.estado}</span></p>
-              <p className="text-gray-400 text-xs">
+              <p><strong>Estado:</strong> <span className="font-medium capitalize">{reclamo.estado}</span></p>
+              <p className="text-xs text-gray-600">
                 Enviado el: {new Date(reclamo.createdAt).toLocaleString()}
               </p>
             </div>
             <button
               onClick={() => handleEliminar(reclamo.id)}
-              className="mt-3 text-sm bg-red-500 text-white px-4 py-1.5 rounded hover:bg-red-600 transition"
+              className="mt-3 px-4 py-1.5 rounded border border-black bg-black text-white hover:bg-white hover:text-black transition text-sm"
             >
               Eliminar
             </button>

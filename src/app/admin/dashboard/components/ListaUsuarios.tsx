@@ -7,7 +7,7 @@ type Usuario = {
   nombre: string;
   apellido: string;
   email: string;
-  rol: string;
+  rol: 'admin' | 'user';
 };
 
 export default function ListarUsuarios() {
@@ -32,13 +32,12 @@ export default function ListarUsuarios() {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: keyof Usuario,
+    e: React.ChangeEvent<HTMLSelectElement>,
     id: number
   ) => {
-    const value = e.target.value;
+    const value = e.target.value as 'admin' | 'user';
     setUsuarios((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, [field]: value } : u))
+      prev.map((u) => (u.id === id ? { ...u, rol: value } : u))
     );
   };
 
@@ -73,81 +72,54 @@ export default function ListarUsuarios() {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4"></h2>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6 uppercase text-black">Usuarios registrados</h2>
 
       <div className="overflow-x-auto">
-        <table className="w-full table-auto border text-sm bg-white">
-          <thead className="bg-gray-100">
+        <table className="w-full border border-black text-sm">
+          <thead className="bg-black text-white uppercase">
             <tr>
-              <th className="border px-2 py-1">ID</th>
-              <th className="border px-2 py-1">Nombre</th>
-              <th className="border px-2 py-1">Apellido</th>
-              <th className="border px-2 py-1">Email</th>
-              <th className="border px-2 py-1">Rol</th>
-              <th className="border px-2 py-1">Acciones</th>
+              <th className="border border-black px-3 py-2 text-left">ID</th>
+              <th className="border border-black px-3 py-2 text-left">Nombre</th>
+              <th className="border border-black px-3 py-2 text-left">Apellido</th>
+              <th className="border border-black px-3 py-2 text-left">Email</th>
+              <th className="border border-black px-3 py-2 text-left">Rol</th>
+              <th className="border border-black px-3 py-2 text-left">Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-black">
             {usuarios.map((u) => (
-              <tr key={u.id}>
-                <td className="border px-2 py-1">{u.id}</td>
-                <td className="border px-2 py-1">
+              <tr key={u.id} className="hover:bg-gray-100">
+                <td className="border border-black px-3 py-2">{u.id}</td>
+                <td className="border border-black px-3 py-2">{u.nombre}</td>
+                <td className="border border-black px-3 py-2">{u.apellido}</td>
+                <td className="border border-black px-3 py-2">{u.email}</td>
+                <td className="border border-black px-3 py-2">
                   {editandoId === u.id ? (
-                    <input
-                      value={u.nombre}
-                      onChange={(e) => handleInputChange(e, 'nombre', u.id)}
-                      className="border px-1 rounded"
-                    />
-                  ) : (
-                    u.nombre
-                  )}
-                </td>
-                <td className="border px-2 py-1">
-                  {editandoId === u.id ? (
-                    <input
-                      value={u.apellido}
-                      onChange={(e) => handleInputChange(e, 'apellido', u.id)}
-                      className="border px-1 rounded"
-                    />
-                  ) : (
-                    u.apellido
-                  )}
-                </td>
-                <td className="border px-2 py-1">
-                  {editandoId === u.id ? (
-                    <input
-                      value={u.email}
-                      onChange={(e) => handleInputChange(e, 'email', u.id)}
-                      className="border px-1 rounded"
-                    />
-                  ) : (
-                    u.email
-                  )}
-                </td>
-                <td className="border px-2 py-1">
-                  {editandoId === u.id ? (
-                    <input
+                    <select
                       value={u.rol}
-                      onChange={(e) => handleInputChange(e, 'rol', u.id)}
-                      className="border px-1 rounded"
-                    />
+                      onChange={(e) => handleInputChange(e, u.id)}
+                      className="border px-1 rounded w-full"
+                    >
+                      <option value="admin">admin</option>
+                      <option value="user">user</option>
+                    </select>
                   ) : (
                     u.rol
                   )}
                 </td>
-                <td className="border px-2 py-1 space-x-2">
+                <td className="border border-black px-3 py-2 space-x-2">
                   {editandoId === u.id ? (
                     <>
                       <button
                         onClick={() => actualizarUsuario(u)}
-                        className="text-green-600 hover:underline"
+                        className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white transition rounded text-xs"
                       >
                         Guardar
                       </button>
                       <button
                         onClick={() => setEditandoId(null)}
-                        className="text-gray-600 hover:underline"
+                        className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white transition rounded text-xs"
                       >
                         Cancelar
                       </button>
@@ -156,13 +128,13 @@ export default function ListarUsuarios() {
                     <>
                       <button
                         onClick={() => setEditandoId(u.id)}
-                        className="text-yellow-600 hover:underline"
+                        className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white transition rounded text-xs"
                       >
                         Editar
                       </button>
                       <button
                         onClick={() => eliminarUsuario(u.id)}
-                        className="text-red-600 hover:underline"
+                        className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white transition rounded text-xs"
                       >
                         Eliminar
                       </button>

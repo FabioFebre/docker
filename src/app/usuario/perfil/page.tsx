@@ -103,15 +103,21 @@ export default function PerfilUsuario() {
   };
 
   const handleEliminarItem = async (itemId: number) => {
-    try {
-      await fetch(`https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`, {
-        method: 'DELETE',
-      });
-      setCarrito((prev) => prev.filter((item) => item.id !== itemId));
-    } catch (err) {
-      console.error('Error al eliminar el producto del carrito:', err);
-    }
+  try {
+    await fetch(`https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`, {
+      method: 'DELETE',
+    });
+
+    // Eliminar del estado local
+    setCarrito((prev) => prev.filter((item) => item.id !== itemId));
+
+    // Recargar la página
+    window.location.reload();
+  } catch (err) {
+    console.error('Error al eliminar el producto del carrito:', err);
+  }
   };
+
 
   const handleEliminarOrden = async (ordenId: number) => {
     const confirmacion = confirm('¿Estás seguro de que deseas eliminar esta orden?');
@@ -135,24 +141,14 @@ export default function PerfilUsuario() {
   };
 
 
-  const handleFinalizarCompra = async () => {
-    setComprando(true);
-    try {
-      for (const item of carrito) {
-        await handleEliminarItem(item.id);
-      }
-      localStorage.setItem('carritoActualizado', 'true');
-
-      setMensajeCompra('¡Gracias por tu compra!');
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 2000);
-    } catch (err) {
-      console.error('Error al finalizar la compra:', err);
-    } finally {
-      setComprando(false);
-    }
+  const handleIrACheckout = () => {
+  if (carrito.length === 0) {
+    alert('Tu carrito está vacío.');
+    return;
+  }
+  router.push('/checkout');
   };
+
 
   if (!usuario) {
     return <p className="text-center mt-10 text-gray-600">Cargando datos del usuario...</p>;
@@ -165,7 +161,7 @@ export default function PerfilUsuario() {
           <h1 className="text-3xl font-bold tracking-tight uppercase">Mi cuenta</h1>
           <button
             onClick={handleLogout}
-            className="text-sm font-medium border border-red-500 px-4 py-1.5 rounded hover:bg-red-500 hover:text-white transition"
+            className="btn-animated"
           >
             Cerrar sesión
           </button>
@@ -241,15 +237,10 @@ export default function PerfilUsuario() {
               </div>
 
               <button
-                onClick={handleFinalizarCompra}
-                disabled={comprando}
-                className={`mt-4 px-4 py-2 rounded text-sm transition ${
-                  comprando
-                    ? 'bg-gray-400 text-white cursor-not-allowed'
-                    : 'bg-black text-white hover:bg-gray-800'
-                }`}
+                onClick={handleIrACheckout}
+                className="mt-4 px-4 py-2 rounded text-sm bg-black text-white hover:bg-gray-800 transition"
               >
-                {comprando ? 'Procesando...' : 'Finalizar compra'}
+                Ir al Checkout
               </button>
             </div>
           )}
