@@ -83,7 +83,19 @@ export default function WomanContent() {
                     className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   />
                 )}
+                {producto.seleccionado && (
+                   <div className="absolute top-2 left-2 z-10">
+                     <span className="inline-block bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                       New Arrivals
+                     </span>
+                   </div>
+                 )}
 
+                 <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                   <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:rotate-90 transform transition-transform duration-300 ease-in-out">
+                     <span className="text-2xl font-bold text-gray-800">+</span>
+                   </div>
+                 </div>
                 <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:rotate-90 transform transition-transform duration-300 ease-in-out">
                     <span className="text-2xl font-bold text-gray-800">+</span>

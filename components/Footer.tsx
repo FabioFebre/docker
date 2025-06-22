@@ -37,8 +37,11 @@ export default function Footer() {
         <a href="https://www.instagram.com/sgstudio.pe" className="link-faded hover:underline" target="_blank" rel="noopener noreferrer">
           Instagram: @sgstudio.pe
         </a>
-        <li>Términos y condiciones</li>
-        <li>Políticas de cambios</li>
+        <li>
+          <Link href="/terminos" className="hover:underline">
+              Términos y condiciones
+          </Link>
+        </li>
         <li>
           <img src="/images/libro-reclamaciones.png" alt="Libro de Reclamaciones" className="w-32 mt-2" />
         </li>

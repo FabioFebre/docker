@@ -91,6 +91,14 @@ export default function NewArrivalsPage() {
                         className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       />
                     )}
+                    {/* Etiqueta "New Arrivals" */}
+                    {producto.seleccionado && (
+                      <div className="absolute top-2 left-2 z-10">
+                        <span className="inline-block bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                          New Arrivals
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="p-4 text-center">
                     <p className="text-sm font-medium text-gray-700 truncate">{producto.nombre}</p>

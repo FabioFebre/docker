@@ -235,7 +235,19 @@ export default function CheckoutPage() {
           </select>
 
           <input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Dirección" required className="w-full p-3 text-black border rounded" />
-          <input name="referencia" value={form.referencia} onChange={handleChange} placeholder="Referencia" className="w-full p-3 text-black border rounded" />
+          <select
+            name="referencia"
+            value={form.referencia}
+            onChange={handleChange}
+            required
+            className="w-full p-3 text-black border rounded"
+          >
+            <option value="">Selecciona una Talla</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="Estándar">Estándar</option>
+          </select>
 
           <select name="metodoEnvio" value={form.metodoEnvio} onChange={handleChange} className="w-full p-3 text-black border rounded">
             <option value="delivery">Delivery</option>
@@ -286,7 +298,7 @@ export default function CheckoutPage() {
                 <img src={item.producto.imagen[0]} alt={item.producto.nombre} className="w-16 h-16 object-cover rounded" />
                 <div>
                   <p className="text-sm font-medium text-gray-800">{item.producto.nombre}</p>
-                  <p className="text-xs text-gray-500">Talla: {item.talla} | Color: {item.color}</p>
+                  <p className="text-xs text-gray-500">Color: {item.color}</p>
                   <p className="text-sm font-semibold text-gray-700">S/. {item.cantidad * item.producto.precio}</p>
                 </div>
               </div>

@@ -32,10 +32,9 @@ export default function ProductoDetalle() {
       setLoading(true);
       const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${id}`);
       if (!res.ok) throw new Error('Error al obtener el producto');
-      
+
       const data = await res.json();
 
-      // Función para ajustar URL si es relativa
       const ajustarURL = (url: string) => {
         if (!url.startsWith('http')) {
           return `https://sg-studio-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
@@ -115,8 +114,7 @@ export default function ProductoDetalle() {
       }
 
       alert('Producto agregado al carrito');
-      window.location.reload(); // <- fuerza recarga completa de la página
-
+      window.location.reload();
     } catch (err) {
       console.error(err);
       alert('Hubo un error al agregar al carrito');
@@ -147,7 +145,6 @@ export default function ProductoDetalle() {
                 unoptimized
                 className="object-cover"
               />
-
             </button>
           ))}
         </div>
@@ -159,21 +156,28 @@ export default function ProductoDetalle() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          {imagenSeleccionada && (
-          <Image
-            src={imagenSeleccionada}
-            alt="Imagen seleccionada"
-            fill
-            unoptimized
-            style={{
-              objectFit: 'contain',
-              transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              transform: isHovering ? 'scale(2)' : 'scale(1)',
-              transition: 'transform 0.2s ease',
-            }}
-            className="rounded-lg pointer-events-none select-none"
-          />
+          {producto.seleccionado && (
+            <div className="absolute top-4 left-4 z-10">
+              <span className="bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow uppercase tracking-wider">
+                New Arrivals
+              </span>
+            </div>
+          )}
 
+          {imagenSeleccionada && (
+            <Image
+              src={imagenSeleccionada}
+              alt="Imagen seleccionada"
+              fill
+              unoptimized
+              style={{
+                objectFit: 'contain',
+                transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                transform: isHovering ? 'scale(2)' : 'scale(1)',
+                transition: 'transform 0.2s ease',
+              }}
+              className="rounded-lg pointer-events-none select-none"
+            />
           )}
         </div>
 
@@ -208,21 +212,6 @@ export default function ProductoDetalle() {
                     +
                   </button>
                 </div>
-
-                <input
-                  type="number"
-                  className="hidden w-16 text-center border rounded py-1 mt-2"
-                  value={cantidad}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value);
-                    if (!isNaN(val)) {
-                      const nueva = Math.max(1, Math.min(val, producto.cantidad));
-                      setCantidad(nueva);
-                    }
-                  }}
-                  min={1}
-                  max={producto.cantidad}
-                />
               </>
             )}
           </div>
@@ -246,7 +235,7 @@ export default function ProductoDetalle() {
             {recomendados.map((item: any) => (
               <div
                 key={item.id}
-                className="cursor-pointer hover:shadow-lg transition p-4 border rounded"
+                className="cursor-pointer hover:shadow-lg transition p-4 border rounded relative"
                 onClick={() => {
                   setIdActual(String(item.id));
                   router.push(`/producto/${item.id}`);
@@ -263,9 +252,17 @@ export default function ProductoDetalle() {
                       className="rounded"
                     />
                   )}
+
+                  {item.seleccionado && (
+                    <div className="absolute top-2 left-2 z-10">
+                      <span className="bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow uppercase tracking-wider">
+                        New Arrivals
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <h3 className="mt-2 text-black font-medium truncate">{item.nombre}</h3>
-                <p className=" font-['Montserrat'] text-sm text-black">PEN {item.precio}</p>
+                <p className="font-['Montserrat'] text-sm text-black">PEN {item.precio}</p>
               </div>
             ))}
           </div>

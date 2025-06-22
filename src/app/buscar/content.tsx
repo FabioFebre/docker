@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Producto = {
   id: number;
@@ -75,14 +76,27 @@ export default function BuscarContent() {
               className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
               <div className="relative w-full h-48">
-                <img
+                <Image
                   src={p.imagen[0]}
                   alt={p.nombre}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  fill
+                  unoptimized
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                    p.imagen[1] ? 'group-hover:opacity-0' : ''
+                  }`}
                 />
+                {p.imagen[1] && (
+                  <Image
+                    src={p.imagen[1]}
+                    alt={`${p.nombre} alternativa`}
+                    fill
+                    unoptimized
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  />
+                )}
                 {p.seleccionado && (
                   <div className="absolute top-2 left-2 z-10">
-                    <span className="inline-block bg-white text-black text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                    <span className="inline-block bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
                       New Arrivals
                     </span>
                   </div>
