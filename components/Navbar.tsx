@@ -26,7 +26,8 @@ export default function Navbar() {
   const router = useRouter();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [submenuAbierto, setSubmenuAbierto] = useState(false);
-
+  const [isHoveringWoman, setIsHoveringWoman] = useState(false); // nuevo
+  const [isHoveringNewArrivals, setIsHoveringNewArrivals] = useState(false); // nuevo
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -208,6 +209,28 @@ export default function Navbar() {
     });
   };
 
+  let hoverTimeout: NodeJS.Timeout;
+
+  const handleHoverEnter = () => {
+    clearTimeout(hoverTimeout);
+    setIsHoveringWoman(true);
+  };
+
+  const handleHoverLeave = () => {
+    hoverTimeout = setTimeout(() => setIsHoveringWoman(false), 300); // 200ms de retardo
+  };
+
+  let hoverTimeoutNewArrivals: NodeJS.Timeout;
+
+  const handleHoverEnterNewArrivals = () => {
+    clearTimeout(hoverTimeoutNewArrivals);
+    setIsHoveringNewArrivals(true);
+  };
+
+  const handleHoverLeaveNewArrivals = () => {
+    hoverTimeoutNewArrivals = setTimeout(() => setIsHoveringNewArrivals(false), 300); // retardo de salida
+  };
+
   
   const bgClass = scrolled || hovered || showSearch
     ? 'bg-white text-black shadow-md border-b border-gray-300'
@@ -318,27 +341,34 @@ export default function Navbar() {
           </Link>
           <ul className="flex gap-6 text-sm font-medium items-center">
             {/* WOMAN */}
-            <li className="relative group">
+            <li
+              className="relative group"
+              onMouseEnter={handleHoverEnter}
+              onMouseLeave={handleHoverLeave}
+            >
               <Link href="/woman" className={`underline-hover transition ${
-                hovered || scrolled
-                  ? 'text-black hover:text-gray-600'
-                  : 'text-white hover:text-gray-300'
+                hovered || scrolled ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'
               }`}>
                 WOMAN
               </Link>
-              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
-                          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
-                          group-hover:opacity-100 group-hover:pointer-events-auto">
-                
+
+              <div className={`absolute left-0 top-full mt-5 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
+                transition-opacity duration-300 ease-out
+                ${isHoveringWoman ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              >
                 {/* Línea superior animada */}
-                <div className="absolute top-0 left-0 h-[3px] bg-gray-800 w-0 transition-all duration-500 origin-left group-hover:w-full"></div>
+                <div className={`absolute top-0 left-0 h-[3px] bg-gray-800 transition-all duration-500 origin-left
+                  ${isHoveringWoman ? 'w-full' : 'w-0'}`}
+                ></div>
 
                 <ul className="space-y-5 text-black">
                   {categorias.length > 0 ? (
                     categorias.map((cat, i) => (
                       <li
                         key={cat.id}
-                        className="transition duration-500 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                        className={`transition duration-500 ease-out transform ${
+                          isHoveringWoman ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                        }`}
                         style={{ transitionDelay: `${i * 80}ms` }}
                       >
                         <Link
@@ -357,27 +387,36 @@ export default function Navbar() {
             </li>
 
             {/* NEW ARRIVALS */}
-            <li className="relative group">
+            <li
+              className="relative group"
+              onMouseEnter={handleHoverEnterNewArrivals}
+              onMouseLeave={handleHoverLeaveNewArrivals}
+            >
               <Link href="/newarrivals" className={`underline-hover transition ${
-                  hovered || scrolled
-                    ? 'text-black hover:text-gray-600'
-                    : 'text-white hover:text-gray-300'
-                }`}>
+                hovered || scrolled
+                  ? 'text-black hover:text-gray-600'
+                  : 'text-white hover:text-gray-300'
+              }`}>
                 NEW ARRIVALS
               </Link>
-              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
-                          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
-                          group-hover:opacity-100 group-hover:pointer-events-auto">
-                
+
+              <div className={`absolute left-0 top-full mt-5 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
+                transition-opacity duration-300 ease-out
+                ${isHoveringNewArrivals ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              >
                 {/* Línea superior animada */}
-                <div className="absolute top-0 left-0 h-[3px] bg-gray-800 w-0 transition-all duration-500 origin-left group-hover:w-full"></div>
+                <div className={`absolute top-0 left-0 h-[3px] bg-gray-800 transition-all duration-500 origin-left
+                  ${isHoveringNewArrivals ? 'w-full' : 'w-0'}`}
+                ></div>
 
                 <ul className="space-y-5 text-black">
                   {categoriasSeleccionadas.length > 0 ? (
                     categoriasSeleccionadas.map((cat, i) => (
                       <li
                         key={cat.id}
-                        className="transition duration-500 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                        className={`transition duration-500 ease-out transform ${
+                          isHoveringNewArrivals ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                        }`}
                         style={{ transitionDelay: `${i * 80}ms` }}
                       >
                         <Link

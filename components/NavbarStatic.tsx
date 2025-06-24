@@ -3,16 +3,20 @@
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaUser, FaSearch, FaShoppingBag, FaTimes, FaTrash, FaBars, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
+import {
+  FaUser, FaSearch, FaShoppingBag, FaTimes,
+  FaTrash, FaBars, FaChevronRight, FaChevronLeft
+} from 'react-icons/fa';
 
-// Tipado
-interface Categoria {
+// Tipos
+
+type Categoria = {
   id: number;
   nombre: string;
   slug?: string;
-}
+};
 
-interface ProductoCarrito {
+type ProductoCarrito = {
   id: number;
   talla: string;
   color: string;
@@ -22,7 +26,7 @@ interface ProductoCarrito {
     imagen: string[];
     precio: number;
   };
-}
+};
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -32,16 +36,27 @@ export default function Navbar() {
   const [showCart, setShowCart] = useState(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [carrito, setCarrito] = useState<ProductoCarrito[]>([]);
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([]);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [submenuAbierto, setSubmenuAbierto] = useState(false);
+  const [isHoveringWoman, setIsHoveringWoman] = useState(false);
+  const [isHoveringNewArrivals, setIsHoveringNewArrivals] = useState(false);
+
   const searchRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
-  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<Categoria[]>([]);
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const [submenuAbierto, setSubmenuAbierto] = useState(false);
+  
 
   const router = useRouter();
+  const onSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim().length > 2) {
+      router.push(`/buscar?query=${encodeURIComponent(searchTerm.trim())}`);
+      setShowSearch(false);
+    }
+  };
 
-  // Carga de categorías
+  const clearSearch = () => setSearchTerm('');
+  // EFECTOS
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -58,22 +73,24 @@ export default function Navbar() {
   useEffect(() => {
     const fetchCategoriasSeleccionadas = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados');
-        const data = await res.json();
+        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados')
+        const data = await res.json()
+
         const unicas = data
           .map((p: any) => p.categoria)
           .filter((cat: any, i: number, self: any[]) =>
             cat && self.findIndex(c => c.id === cat.id) === i
-          );
-        setCategoriasSeleccionadas(unicas);
+          )
+
+        setCategoriasSeleccionadas(unicas)
       } catch (err) {
-        console.error('Error cargando categorías seleccionadas', err);
+        console.error('Error cargando categorías seleccionadas', err)
       }
-    };
-    fetchCategoriasSeleccionadas();
+    }
+
+    fetchCategoriasSeleccionadas()
   }, []);
 
-  // Cargar carrito
   useEffect(() => {
     const fetchCarrito = async () => {
       const storedUser = localStorage.getItem('usuario');
@@ -96,6 +113,7 @@ export default function Navbar() {
         }
       }
     };
+
     fetchCarrito();
   }, []);
 
@@ -135,7 +153,7 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutsideCart);
   }, [showCart]);
 
-  const clearSearch = () => setSearchTerm('');
+  // ACCIONES
 
   const handleUserClick = () => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -177,9 +195,12 @@ export default function Navbar() {
 
     if (isLoggedIn && storedUser) {
       try {
+        const user = JSON.parse(storedUser);
         const response = await fetch(
           `https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`,
-          { method: 'DELETE' }
+          {
+            method: 'DELETE',
+          }
         );
 
         if (!response.ok) {
@@ -188,29 +209,50 @@ export default function Navbar() {
       } catch (error) {
         console.error('Error al eliminar el producto del backend:', error);
       }
-
-      if (window.location.pathname === '/checkout') {
-        window.location.href = '/';
-      } else {
-        window.location.reload();
-      }  
     }
 
     localStorage.setItem('carrito', JSON.stringify(nuevoCarrito));
     setCarrito(nuevoCarrito);
 
-    if (window.location.pathname === '/usuario/perfil') {
+    if (window.location.pathname === '/checkout') {
+      window.location.href = '/';
+    } else {
       window.location.reload();
     }
   };
 
-  const bgClass = scrolled || hovered || showSearch
+
+let hoverTimeout: NodeJS.Timeout;
+
+  const handleHoverEnter = () => {
+    clearTimeout(hoverTimeout);
+    setIsHoveringWoman(true);
+  };
+
+  const handleHoverLeave = () => {
+    hoverTimeout = setTimeout(() => setIsHoveringWoman(false), 300); // 200ms de retardo
+  };
+
+  let hoverTimeoutNewArrivals: NodeJS.Timeout;
+
+  const handleHoverEnterNewArrivals = () => {
+    clearTimeout(hoverTimeoutNewArrivals);
+    setIsHoveringNewArrivals(true);
+  };
+
+  const handleHoverLeaveNewArrivals = () => {
+    hoverTimeoutNewArrivals = setTimeout(() => setIsHoveringNewArrivals(false), 300); // retardo de salida
+  };
+
+const bgClassnot = 'bg-white text-black shadow-md border-b border-gray-300';
+
+const bgClass = scrolled || hovered || showSearch
     ? 'bg-white text-black shadow-md border-b border-gray-300'
-    : 'bg-transparent text-black border-b border-transparent';
+    : 'bg-transparent text- border-b border-transparent';
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-50 px-8 py-4 transition-all duration-300 ${bgClass}`}
+      <nav className={`fixed top-0 left-0 w-full z-50 px-8 py-4 transition-all duration-300 ${bgClassnot}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -310,33 +352,42 @@ export default function Navbar() {
         </div>
         {/* ------------------------- */}
         <div className="hidden md:flex justify-between items-center">
-          <Link href="/" className="text-2xl text-black font-bold">
+          <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-colors duration-300">
             SG STUDIO
           </Link>
 
           <ul className="flex gap-6 text-sm font-medium items-center">
             {/* WOMAN */}
-            <li className="relative group">
+            <li
+              className="relative group"
+              onMouseEnter={handleHoverEnter}
+              onMouseLeave={handleHoverLeave}
+            >
               <Link href="/woman" className={`underline-hover transition ${
-                hovered || scrolled
-                  ? 'text-black hover:text-gray-600'
-                  : 'text-black hover:text-gray-300'
+                hovered || scrolled 
+                ? 'text-black hover:text-gray-600' 
+                : 'text-black hover:text-gray-300'
               }`}>
                 WOMAN
               </Link>
-              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
-                          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
-                          group-hover:opacity-100 group-hover:pointer-events-auto">
-                
+
+              <div className={`absolute left-0 top-full mt-5 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
+                transition-opacity duration-300 ease-out
+                ${isHoveringWoman ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              >
                 {/* Línea superior animada */}
-                <div className="absolute top-0 left-0 h-[3px] bg-gray-800 w-0 transition-all duration-500 origin-left group-hover:w-full"></div>
+                <div className={`absolute top-0 left-0 h-[3px] bg-gray-800 transition-all duration-500 origin-left
+                  ${isHoveringWoman ? 'w-full' : 'w-0'}`}
+                ></div>
 
                 <ul className="space-y-5 text-black">
                   {categorias.length > 0 ? (
                     categorias.map((cat, i) => (
                       <li
                         key={cat.id}
-                        className="transition duration-500 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                        className={`transition duration-500 ease-out transform ${
+                          isHoveringWoman ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                        }`}
                         style={{ transitionDelay: `${i * 80}ms` }}
                       >
                         <Link
@@ -355,28 +406,40 @@ export default function Navbar() {
             </li>
 
             {/* NEW ARRIVALS */}
-            <li className="relative group">
+            <li
+              className="relative group"
+              onMouseEnter={handleHoverEnterNewArrivals}
+              onMouseLeave={handleHoverLeaveNewArrivals}
+            >
               <Link href="/newarrivals" className={`underline-hover transition ${
-                  hovered || scrolled
-                    ? 'text-black hover:text-gray-600'
-                    : 'text-black hover:text-gray-300'
-                }`}>
+                hovered || scrolled
+                  ? 'text-black hover:text-gray-600'
+                  : 'text-black hover:text-gray-300'
+              }`}>
                 NEW ARRIVALS
               </Link>
-              <div className="absolute left-0 top-full mt-2 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
-                          opacity-0 pointer-events-none transition-opacity duration-300 ease-out
-                          group-hover:opacity-100 group-hover:pointer-events-auto">
-                
+
+              <div className={`absolute left-0 top-full mt-5 w-64 bg-white shadow-lg p-4 pt-6 text-sm z-10
+                transition-opacity duration-300 ease-out
+                ${isHoveringNewArrivals ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              >
                 {/* Línea superior animada */}
-                <div className="absolute top-0 left-0 h-[3px] bg-gray-800 w-0 transition-all duration-500 origin-left group-hover:w-full"></div>
+                <div className={`absolute top-0 left-0 h-[3px] bg-gray-800 transition-all duration-500 origin-left
+                  ${isHoveringNewArrivals ? 'w-full' : 'w-0'}`}
+                ></div>
+
                 <ul className="space-y-5 text-black">
                   {categoriasSeleccionadas.length > 0 ? (
                     categoriasSeleccionadas.map((cat, i) => (
-                      <li key={cat.id}
-                        className="transition duration-500 ease-out transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
-                          style={{ transitionDelay: `${i * 80}ms` }}
-                        >
-                        <Link href={`/newarrivals?categoria=${encodeURIComponent(cat.nombre)}`}
+                      <li
+                        key={cat.id}
+                        className={`transition duration-500 ease-out transform ${
+                          isHoveringNewArrivals ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
+                        }`}
+                        style={{ transitionDelay: `${i * 80}ms` }}
+                      >
+                        <Link
+                          href={`/newarrivals?categoria=${encodeURIComponent(cat.nombre)}`}
                           className="block hover:text-gray-700 transition-colors"
                         >
                           {cat.nombre}
@@ -393,7 +456,7 @@ export default function Navbar() {
 
                   
 
-          <div className="flex gap-4 text-xl text-black">
+          <div className="flex gap-4 text-xl transition-colors duration-300">
             <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-gray-400">
               <FaUser />
             </button>
