@@ -5,13 +5,14 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaSearch, FaShoppingBag, FaTimes, FaTrash, FaBars, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
 
-type Categoria = {
+// Tipado
+interface Categoria {
   id: number;
   nombre: string;
   slug?: string;
-};
+}
 
-type ProductoCarrito = {
+interface ProductoCarrito {
   id: number;
   talla: string;
   color: string;
@@ -21,7 +22,7 @@ type ProductoCarrito = {
     imagen: string[];
     precio: number;
   };
-};
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -34,13 +35,13 @@ export default function Navbar() {
   const searchRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const cartRef = useRef<HTMLDivElement>(null);
-  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([])
+  const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<Categoria[]>([]);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [submenuAbierto, setSubmenuAbierto] = useState(false);
 
-
   const router = useRouter();
 
+  // Carga de categorías
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -53,29 +54,26 @@ export default function Navbar() {
     };
     fetchCategorias();
   }, []);
-  
 
   useEffect(() => {
     const fetchCategoriasSeleccionadas = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados')
-        const data = await res.json()
-
+        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados');
+        const data = await res.json();
         const unicas = data
           .map((p: any) => p.categoria)
           .filter((cat: any, i: number, self: any[]) =>
             cat && self.findIndex(c => c.id === cat.id) === i
-          )
-
-        setCategoriasSeleccionadas(unicas)
+          );
+        setCategoriasSeleccionadas(unicas);
       } catch (err) {
-        console.error('Error cargando categorías seleccionadas', err)
+        console.error('Error cargando categorías seleccionadas', err);
       }
-    }
+    };
+    fetchCategoriasSeleccionadas();
+  }, []);
 
-    fetchCategoriasSeleccionadas()
-  }, [])
-
+  // Cargar carrito
   useEffect(() => {
     const fetchCarrito = async () => {
       const storedUser = localStorage.getItem('usuario');
@@ -98,7 +96,6 @@ export default function Navbar() {
         }
       }
     };
-
     fetchCarrito();
   }, []);
 
@@ -173,40 +170,43 @@ export default function Navbar() {
   };
 
   const eliminarProducto = async (itemId: number) => {
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  const storedUser = localStorage.getItem('usuario');
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const storedUser = localStorage.getItem('usuario');
 
-  const nuevoCarrito = carrito.filter((item) => item.id !== itemId);
+    const nuevoCarrito = carrito.filter((item) => item.id !== itemId);
 
-  if (isLoggedIn && storedUser) {
-    try {
-      const user = JSON.parse(storedUser);
-      const response = await fetch(
-        `https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`,
-        {
-          method: 'DELETE',
+    if (isLoggedIn && storedUser) {
+      try {
+        const response = await fetch(
+          `https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`,
+          { method: 'DELETE' }
+        );
+
+        if (!response.ok) {
+          console.error('Error al eliminar del backend:', await response.text());
         }
-      );
-
-      if (!response.ok) {
-        console.error('Error al eliminar del backend:', await response.text());
+      } catch (error) {
+        console.error('Error al eliminar el producto del backend:', error);
       }
-    } catch (error) {
-      console.error('Error al eliminar el producto del backend:', error);
+
+      if (window.location.pathname === '/checkout') {
+        window.location.href = '/';
+      } else {
+        window.location.reload();
+      }  
     }
-  }
 
-  localStorage.setItem('carrito', JSON.stringify(nuevoCarrito));
-  setCarrito(nuevoCarrito);
+    localStorage.setItem('carrito', JSON.stringify(nuevoCarrito));
+    setCarrito(nuevoCarrito);
 
-  if (window.location.pathname === '/usuario/perfil') {
-    window.location.reload();
-  }
-};
+    if (window.location.pathname === '/usuario/perfil') {
+      window.location.reload();
+    }
+  };
 
-const bgClass = scrolled || hovered || showSearch
+  const bgClass = scrolled || hovered || showSearch
     ? 'bg-white text-black shadow-md border-b border-gray-300'
-    : 'bg-transparent text- border-b border-transparent';
+    : 'bg-transparent text-black border-b border-transparent';
 
   return (
     <>
@@ -310,7 +310,7 @@ const bgClass = scrolled || hovered || showSearch
         </div>
         {/* ------------------------- */}
         <div className="hidden md:flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold hover:opacity-80 transition-colors duration-300">
+          <Link href="/" className="text-2xl text-black font-bold">
             SG STUDIO
           </Link>
 
@@ -393,7 +393,7 @@ const bgClass = scrolled || hovered || showSearch
 
                   
 
-          <div className="flex gap-4 text-xl transition-colors duration-300">
+          <div className="flex gap-4 text-xl text-black">
             <button onClick={handleUserClick} aria-label="Perfil" className="hover:text-gray-400">
               <FaUser />
             </button>

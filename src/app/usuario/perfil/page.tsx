@@ -42,6 +42,9 @@ export default function PerfilUsuario() {
   const [mensajeReclamo, setMensajeReclamo] = useState('');
   const [ordenSeleccionada, setOrdenSeleccionada] = useState<Orden | null>(null);
   const [mostrarFormularioReclamo, setMostrarFormularioReclamo] = useState(false);
+  const [reclamos, setReclamos] = useState<any[]>([]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
 
   const router = useRouter();
@@ -64,6 +67,21 @@ export default function PerfilUsuario() {
     fetchOrdenes();
   }, [usuario]);
 
+  useEffect(() => {
+    async function fetchReclamos() {
+      if (!usuario?.id) return;
+      try {
+        const res = await fetch(`https://sg-studio-backend.onrender.com/reclamos`);
+        const data = await res.json();
+        const reclamosUsuario = data.filter((r: any) => r.usuarioId === usuario.id);
+        setReclamos(reclamosUsuario);
+      } catch (err) {
+        console.error('Error al obtener reclamos:', err);
+      }
+    }
+
+    fetchReclamos();
+  }, [usuario]);
 
 
 
@@ -100,6 +118,11 @@ export default function PerfilUsuario() {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('role');
     router.push('/');
+  };
+  const mostrarToast = (mensaje: string) => {
+    setToastMessage(mensaje);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 1500);
   };
 
   const handleEliminarItem = async (itemId: number) => {
@@ -143,7 +166,7 @@ export default function PerfilUsuario() {
 
   const handleIrACheckout = () => {
   if (carrito.length === 0) {
-    alert('Tu carrito está vacío.');
+    mostrarToast('Tu carrito está vacío.');
     return;
   }
   router.push('/checkout');
@@ -292,10 +315,31 @@ export default function PerfilUsuario() {
           )}
         </div>
 
-      
-
-
         <div className="border-t border-gray-300 pt-6">
+          <h2 className="text-xl font-semibold uppercase mb-4">Mis reclamos</h2>
+
+          {reclamos.length === 0 ? (
+            <p className="text-gray-600">Aún no has registrado ningún reclamo.</p>
+          ) : (
+            <div className="space-y-4">
+              {reclamos.map((r) => (
+                <div
+                  key={r.id}
+                  className="p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition"
+                >
+                  <p className="text-sm text-gray-600">Reclamo #{r.id} - Orden #{r.ordenId}</p>
+                  <p className="text-sm text-gray-800 mt-2">{r.mensaje}</p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    Enviado: {new Date(r.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+
+        <div className="border-t border-gray-300 pt-6 pb-15">
           <h2 className="text-xl font-semibold uppercase mb-4">Información de la cuenta</h2>
           <div className="space-y-2 text-sm text-gray-800">
             <p>
@@ -307,9 +351,18 @@ export default function PerfilUsuario() {
           </div>
         </div>
       </div>
+      
+      {showToast && (
+        <div className="fixed top-15 right-6 z-50 bg-black text-white px-6 py-3 rounded shadow-lg animate-fade-in-out transition-all">
+          <p className="text-sm">{toastMessage}</p>
+          <div className="mt-2 h-1 bg-white/30 relative overflow-hidden rounded">
+            <div className="absolute inset-0 bg-white animate-toast-progress" />
+          </div>
+        </div>
+      )}
 
       {mostrarFormularioReclamo && ordenSeleccionada && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
             <h2 className="text-lg font-semibold mb-4">Enviar reclamo para la orden #{ordenSeleccionada.id}</h2>
             <textarea
@@ -332,7 +385,7 @@ export default function PerfilUsuario() {
               <button
                 onClick={async () => {
                   if (!mensajeReclamo.trim()) {
-                    alert('El mensaje no puede estar vacío.');
+                    mostrarToast('El mensaje no puede estar vacío.');
                     return;
                   }
 
@@ -354,7 +407,7 @@ export default function PerfilUsuario() {
                       throw new Error(err.error || 'Error al enviar reclamo');
                     }
 
-                    alert('Tu reclamo ha sido registrado correctamente.');
+                    mostrarToast('Reclamo enviado correctamente');
                     setMostrarFormularioReclamo(false);
                     setMensajeReclamo('');
                     setOrdenSeleccionada(null);
@@ -362,6 +415,9 @@ export default function PerfilUsuario() {
                     console.error(error);
                     alert('Error al registrar el reclamo.');
                   }
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1500);
                 }}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
@@ -373,5 +429,6 @@ export default function PerfilUsuario() {
       )}
 
     </section>
+    
   );
 }

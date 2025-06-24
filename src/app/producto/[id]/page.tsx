@@ -19,12 +19,20 @@ export default function ProductoDetalle() {
   const [cantidad, setCantidad] = useState(1);
   const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const [isHovering, setIsHovering] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.pageX - left - window.scrollX) / width) * 100;
     const y = ((e.pageY - top - window.scrollY) / height) * 100;
     setZoomPosition({ x, y });
+  };
+
+  const mostrarToast = (mensaje: string) => {
+    setToastMessage(mensaje);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 1500);
   };
 
   const fetchProducto = async (id: string | number) => {
@@ -34,7 +42,6 @@ export default function ProductoDetalle() {
       if (!res.ok) throw new Error('Error al obtener el producto');
 
       const data = await res.json();
-
       const ajustarURL = (url: string) => {
         if (!url.startsWith('http')) {
           return `https://sg-studio-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
@@ -79,75 +86,92 @@ export default function ProductoDetalle() {
     if (!loading) fetchRecomendados();
   }, [loading, idActual]);
 
-  const handleAgregarAlCarrito = async () => {
-    const usuarioStr = typeof window !== 'undefined' ? localStorage.getItem('usuario') : null;
-    const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
-    const userId = usuario?.id;
+ const handleAgregarAlCarrito = async () => {
+  const usuarioStr = typeof window !== 'undefined' ? localStorage.getItem('usuario') : null;
+  const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
+  const userId = usuario?.id;
 
-    if (!userId) {
-      alert('Debe iniciar sesión para agregar productos al carrito');
-      router.push('/login');
-      return;
+  if (!userId) {
+    alert('Debe iniciar sesión para agregar productos al carrito');
+    router.push('/login');
+    return;
+  }
+
+  if (cantidad < 1) {
+    mostrarToast('La cantidad debe ser al menos 1');
+    return;
+  }
+
+  try {
+    const res = await fetch('https://sg-studio-backend.onrender.com/carrito/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        usuarioId: userId,
+        productoId: producto.id,
+        cantidad,
+        talla: 'M',
+        color: producto.color || 'negro',
+      }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Error al agregar al carrito: ${errorText}`);
     }
 
-    if (cantidad < 1) {
-      alert('La cantidad debe ser al menos 1');
-      return;
-    }
+    mostrarToast('Producto agregado al carrito');
 
-    try {
-      const res = await fetch('https://sg-studio-backend.onrender.com/carrito/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          usuarioId: userId,
-          productoId: producto.id,
-          cantidad,
-          talla: 'M',
-          color: producto.color || 'negro',
-        }),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`Error al agregar al carrito: ${errorText}`);
-      }
-
-      alert('Producto agregado al carrito');
+    setTimeout(() => {
       window.location.reload();
-    } catch (err) {
-      console.error(err);
-      alert('Hubo un error al agregar al carrito');
-    }
-  };
+    }, 1500);
+  } catch (err) {
+    console.error(err);
+    mostrarToast('Hubo un error al agregar al carrito');
+  }
+};
 
   if (loading) return <p className="p-12 text-center">Cargando producto...</p>;
   if (error) return <p className="p-12 text-center text-red-600">{error}</p>;
   if (!producto) return <p className="p-12 text-center">Producto no encontrado</p>;
 
-  const { nombre, descripcion, precio, imagen = [], color } = producto;
+  const { nombre, precio, imagen = [], color } = producto;
 
   return (
-    <div className="bg-white min-h-screen px-6 md:px-12 pt-24 md:pt-32 pb-12">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[auto_500px_1fr] gap-6">
-        <div className="flex flex-row md:flex-col gap-3 items-center md:items-start">
-          {imagen.map((img: string, index: number) => (
-            <button
-              key={index}
-              onClick={() => setImagenSeleccionada(img)}
-              className={`border rounded overflow-hidden w-[60px] h-[80px] hover:opacity-80 transition ${imagenSeleccionada === img ? 'ring-2 ring-black' : ''}`}
-            >
-              <Image
-                src={img}
-                alt={`Vista ${index + 1}`}
-                width={60}
-                height={80}
-                unoptimized
-                className="object-cover"
-              />
-            </button>
-          ))}
+  <div className="bg-white min-h-screen px-6 md:px-12 pt-24 md:pt-32 pb-12">
+    
+    {/* Toast */}
+    {showToast && (
+      <div className="fixed top-15 right-6 z-50 bg-black text-white px-6 py-3 rounded shadow-lg animate-fade-in-out transition-all">
+        <p className="text-sm">{toastMessage}</p>
+        <div className="mt-2 h-1 bg-white/30 relative overflow-hidden rounded">
+          <div className="absolute inset-0 bg-white animate-toast-progress" />
         </div>
+      </div>
+    )}
+
+    {/* CONTENIDO PRINCIPAL */}
+    <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[auto_500px_1fr] gap-6">
+      <div className="flex flex-row md:flex-col gap-3 items-center md:items-start">
+        {imagen.map((img: string, index: number) => (
+          <button
+            key={index}
+            onClick={() => setImagenSeleccionada(img)}
+            className={`border rounded overflow-hidden w-[60px] h-[80px] hover:opacity-80 transition ${
+              imagenSeleccionada === img ? 'ring-2 ring-black' : ''
+            }`}
+          >
+            <Image
+              src={img}
+              alt={`Vista ${index + 1}`}
+              width={60}
+              height={80}
+              unoptimized
+              className="object-cover"
+            />
+          </button>
+        ))}
+      </div>
 
         <div
           className="relative w-full h-[800px] shadow-md rounded-lg overflow-hidden flex items-center justify-center bg-gray-100"

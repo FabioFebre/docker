@@ -17,6 +17,8 @@ export default function CheckoutPage() {
   const [provincias, setProvincias] = useState<string[]>([])
   const [distritos, setDistritos] = useState<string[]>([])
   const [aceptaTerminos, setAceptaTerminos] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
 
   const [form, setForm] = useState({
     telefono: '',
@@ -34,24 +36,25 @@ export default function CheckoutPage() {
       .then(res => res.json())
       .then(raw => {
         const lista: any[] = []
-
         Object.entries(raw).forEach(([departamento, provincias]) => {
           Object.entries(provincias as object).forEach(([provincia, distritos]) => {
             Object.keys(distritos as object).forEach((distrito) => {
-              lista.push({
-                departamento,
-                provincia,
-                distrito
-              })
+              lista.push({ departamento, provincia, distrito })
             })
           })
         })
-
         setUbigeos(lista)
         const deps = Array.from(new Set(lista.map(u => u.departamento))).filter(Boolean)
         setDepartamentos(deps)
       })
   }, [])
+
+  const mostrarToast = (mensaje: string) => {
+    setToastMessage(mensaje)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000) 
+  }
+
 
   const handleChange = (e: any) => {
     const { name, value } = e.target
@@ -114,7 +117,7 @@ export default function CheckoutPage() {
     e.preventDefault()
 
     if (!carrito?.items?.length) {
-      alert('El carrito está vacío.')
+      mostrarToast('El carrito está vacío.')
       return
     }
 
@@ -144,14 +147,13 @@ export default function CheckoutPage() {
 
     try {
       await axios.post('https://sg-studio-backend.onrender.com/ordenes', orden)
-
-      alert('¡Gracias por tu compra! 🛍️\n\nUna asesora comercial se pondrá en contacto contigo en breve para coordinar la entrega. 📞✨')
+      mostrarToast('¡Gracias por tu compra! 🛍️')
 
       const numeroWsp = '51913537327'
       const mensaje = encodeURIComponent(
         ` *NUEVA ORDEN SG STUDIO* 🛍️\n\n` +
         ` *Cliente:* ${orden.nombre} ${orden.apellido}\n *Email:* ${orden.email}\n *Teléfono:* ${orden.telefono}\n\n` +
-        ` *Envío a:* ${orden.direccion}, ${orden.distrito}, ${orden.provincia}, ${orden.departamento}, ${orden.pais}\n *Referencia:* ${orden.referencia}\n *Método de Envío:* ${orden.metodoEnvio}\n\n` +
+        ` *Envío a:* ${orden.direccion}, ${orden.distrito}, ${orden.provincia}, ${orden.departamento}, ${orden.pais}\n *Talla:* ${orden.referencia}\n *Método de Envío:* ${orden.metodoEnvio}\n\n` +
         ` *Productos:*\n` +
         orden.items.map((item: any, i: number) =>
           `${i + 1}. Producto ID: ${item.productoId}\n   - Cantidad: ${item.cantidad}\n   - Precio unitario: S/. ${item.precio}`
@@ -171,15 +173,33 @@ export default function CheckoutPage() {
       }
 
       setCarrito(null)
-      router.push('/usuario/perfil')
+    setTimeout(() => {
+  router.replace('/usuario/perfil')
+  setTimeout(() => {
+      window.location.reload()
+    }, 200) 
+  }, 3500)
+
+
     } catch (err: any) {
-      alert('Error al crear la orden: ' + JSON.stringify(err.response?.data || err.message))
+      mostrarToast('Error al crear la orden')
+      console.error(err)
     }
   }
 
   if (loading) return <p className="text-center mt-10">Cargando...</p>
 
   return (
+    <>
+      {showToast && (
+        <div className="fixed top-15 rigth-6 z-50 bg-black text-white px-6 py-3 rounded shadow-lg transition-all">
+          <p className="text-sm">{toastMessage}</p>
+          <div className="mt-2 h-1 bg-white/30 relative overflow-hidden rounded">
+            <div className="absolute inset-0 bg-white animate-toast-progress" />
+          </div>
+        </div>
+      )}
+
     <div className="min-h-screen bg-gray-50 px-6 py-20">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
         <form onSubmit={crearOrden} className="bg-white p-8 rounded-lg shadow space-y-4">
@@ -314,5 +334,7 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  </>
   )
 }
+
