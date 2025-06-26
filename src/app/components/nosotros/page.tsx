@@ -36,21 +36,21 @@ const Nosotros = () => {
           <div>
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">¿Dónde estamos?</h2>
             <p className="text-gray-700 mb-2">
-              Nuestra tienda principal está ubicada en el corazón de la ciudad, con fácil acceso desde
-              avenidas principales y transporte público.
+              Tienda de ropa, lista para elevar tus outfits con nosotros ✨
             </p>
             <p className="text-gray-700 mb-2">
-              <strong>Dirección:</strong> Av. Caminos del Inca 1234, Surco - Lima, Perú
+              <strong>Dirección:</strong> Jr. Pizarro 818, Int. 117 - Centro Comercial Plaza Pizarro
             </p>
             <p className="text-gray-700">
-              <strong>Horario:</strong> Lunes a Sábado de 10:00 am a 8:00 pm
+              <strong>Horario:</strong> Lunes a Sábado de 10:30 am a 8:30 pm
             </p>
           </div>
+
 
           {/* Mapa */}
           <div className="w-full">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.98116737663!2d-76.97714428480752!3d-12.129663845972023!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c6edabcde4b1%3A0xabcdef1234567890!2sAv.%20Caminos%20del%20Inca%201234%2C%20Santiago%20de%20Surco%2015023!5e0!3m2!1ses-419!2spe!4v1650552479531!5m2!1ses-419!2spe"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d246.87081284605472!2d-79.02460893928793!3d-8.108304362540006!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2spe!4v1750951564030!5m2!1ses!2spe"
               width="100%"
               height="450"
               loading="lazy"
