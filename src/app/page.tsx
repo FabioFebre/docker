@@ -6,6 +6,7 @@ import Link from 'next/link'
 import TextWithIcons from './components/TextWithIcons'
 import WhatsappBubble from '../../components/WhatsappBubble'
 import SplashScreen from '../../components/SplashScreen'
+import { useRouter } from 'next/navigation'
 
 const slides = ['/images/home2.jpg', '/images/home4.jpg']
 
@@ -93,6 +94,7 @@ export default function Home() {
   const [page, setPage] = useState(0)
   const [showSplash, setShowSplash] = useState(true)
   const [fadeSplash, setFadeSplash] = useState(false)
+  const [showOverlaySplash, setShowOverlaySplash] = useState(false)
 
   useEffect(() => {
     const t1 = setTimeout(() => setFadeSplash(true), 1000)
@@ -129,6 +131,7 @@ export default function Home() {
   const currentItems = items.slice(start, start + perPage)
   const prevPage = () => setPage(p => (p - 1 + pageCount) % pageCount)
   const nextPage = () => setPage(p => (p + 1) % pageCount)
+  const router = useRouter()
 
   return (
     <div className="relative">
@@ -164,7 +167,15 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
                 {currentItems.map(({ id, imagen, nombre, precio, descripcion, seleccionado }) => (
-                  <Link key={id} href={`/producto/${id}`} className="group">
+                    <Link
+                      key={id}
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setShowOverlaySplash(true)
+                        setTimeout(() => router.push(`/producto/${id}`), 600)
+                      }}
+                    >
                     <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300">
                       <div className="relative w-full h-150">
                         <img
@@ -248,6 +259,11 @@ export default function Home() {
           }`}
         >
           <SplashScreen fadeOut={fadeSplash} />
+        </div>
+      )}
+      {showOverlaySplash && (
+        <div className="fixed inset-0 z-50 bg-white flex items-center justify-center transition-opacity duration-700">
+          <SplashScreen fadeOut={false} />
         </div>
       )}
     </div>
