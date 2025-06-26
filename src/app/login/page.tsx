@@ -29,11 +29,17 @@ export default function LoginPage() {
 
         setMensaje('');
 
-        if (data.usuario.rol === 'admin') {
-          router.push('/admin/dashboard');
-        } else {
-          router.push('/');
-        }
+      if (data.usuario.rol === 'admin') {
+        router.push('/admin/dashboard');
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } else {
+        router.push('/');
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
       } else {
         setMensaje(data.error || 'Correo o contraseña incorrectos');
       }

@@ -118,7 +118,11 @@ export default function PerfilUsuario() {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('role');
     router.push('/');
+    setTimeout(() => {
+      window.location.reload();
+    }, 100); 
   };
+
   const mostrarToast = (mensaje: string) => {
     setToastMessage(mensaje);
     setShowToast(true);

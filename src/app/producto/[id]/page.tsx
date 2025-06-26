@@ -92,7 +92,7 @@ export default function ProductoDetalle() {
   const userId = usuario?.id;
 
   if (!userId) {
-    alert('Debe iniciar sesión para agregar productos al carrito');
+    mostrarToast('Debe iniciar sesión para agregar productos al carrito');
     router.push('/login');
     return;
   }

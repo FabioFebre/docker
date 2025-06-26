@@ -83,6 +83,7 @@ export default function Navbar() {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const storedUser = localStorage.getItem('usuario');
+  
     if (isLoggedIn && storedUser) {
       const user = JSON.parse(storedUser);
       fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}`)
@@ -90,10 +91,11 @@ export default function Navbar() {
         .then(data => setCarrito(data.items))
         .catch(console.error);
     } else {
-      const saved = localStorage.getItem('carrito');
-      if (saved) setCarrito(JSON.parse(saved));
+      setCarrito([]);
+      localStorage.removeItem('carrito');
     }
   }, []);
+
 
   useEffect(() => {
     const fetchCategoriasSeleccionadas = async () => {
@@ -117,8 +119,13 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      localStorage.setItem('carrito', JSON.stringify(carrito));
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    if (!isLoggedIn) {
+      if (carrito.length > 0) {
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+      } else {
+        localStorage.removeItem('carrito');
+      }
     }
   }, [carrito]);
 
