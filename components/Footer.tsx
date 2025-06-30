@@ -43,7 +43,7 @@ export default function Footer() {
           </Link>
         </li>
         <li>
-          <img src="/images/libro-reclamaciones.png" alt="Libro de Reclamaciones" className="w-32 mt-2" />
+          <img src="/images/LIBRO-RECLAMACIONES.png" alt="Libro de Reclamaciones" className="w-32 mt-2" />
         </li>
       </ul>
     </div>
