@@ -278,42 +278,41 @@ export default function PerfilUsuario() {
             <p className="text-gray-600">Aún no has realizado ninguna orden.</p>
           ) : (
             <div className="space-y-4">
-              {ordenes.map((orden) => (
-                <div
-                  key={orden.id}
-                  className="p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition relative"
-                >
-                 
-                 {orden.estado === 'completado' ? (
-                  <button
-                    onClick={() => {
-                      setOrdenSeleccionada(orden);
-                      setMostrarFormularioReclamo(true);
-                    }}
-                    className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 text-sm"
-                  >
-                    Reclamos o quejas
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleEliminarOrden(orden.id)}
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"
-                  >
-                    Eliminar
-                  </button>
-                )}
+              {ordenes.map((orden, index) => (
+           <div
+             key={orden.id}
+             className="p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition relative"
+           >
+             {orden.estado === 'completado' ? (
+               <button
+                 onClick={() => {
+                   setOrdenSeleccionada(orden);
+                   setMostrarFormularioReclamo(true);
+                 }}
+                 className="absolute top-2 right-2 text-blue-600 hover:text-blue-800 text-sm"
+               >
+                 Reclamos o quejas
+               </button>
+             ) : (
+               <button
+                 onClick={() => handleEliminarOrden(orden.id)}
+                 className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-sm"
+               >
+                 Eliminar
+               </button>
+             )}
 
+             <p className="text-sm text-gray-600">Orden #{index + 1}</p>
+             <p className="text-lg font-semibold">Total: PEN {orden.total.toFixed(2)}</p>
+             <p className="text-sm text-gray-500">
+               Estado: <span className="font-medium">{orden.estado}</span>
+             </p>
+             <p className="text-sm text-gray-400">
+               Fecha: {new Date(orden.createdAt).toLocaleString()}
+             </p>
+           </div>
+         ))}
 
-                  <p className="text-sm text-gray-600">Orden #{orden.id}</p>
-                  <p className="text-lg font-semibold">Total: PEN {orden.total.toFixed(2)}</p>
-                  <p className="text-sm text-gray-500">
-                    Estado: <span className="font-medium">{orden.estado}</span>
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    Fecha: {new Date(orden.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              ))}
             </div>
 
           )}

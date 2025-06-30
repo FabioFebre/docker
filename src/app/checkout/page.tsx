@@ -125,7 +125,7 @@ export default function CheckoutPage() {
       (total: number, item: any) => total + item.cantidad * item.producto.precio,
       0
     )
-    const envio = 10
+    const envio = 0
     const total = subtotal + envio
 
     const orden = {
@@ -153,12 +153,12 @@ export default function CheckoutPage() {
       const mensaje = encodeURIComponent(
         ` *NUEVA ORDEN SG STUDIO* 🛍️\n\n` +
         ` *Cliente:* ${orden.nombre} ${orden.apellido}\n *Email:* ${orden.email}\n *Teléfono:* ${orden.telefono}\n\n` +
-        ` *Envío a:* ${orden.direccion}, ${orden.distrito}, ${orden.provincia}, ${orden.departamento}, ${orden.pais}\n *Talla:* ${orden.referencia}\n *Método de Envío:* ${orden.metodoEnvio}\n\n` +
+        ` *Envío a:* ${orden.direccion}, ${orden.distrito}, ${orden.provincia}, ${orden.departamento}, ${orden.pais}\n\n` +
         ` *Productos:*\n` +
         orden.items.map((item: any, i: number) =>
           `${i + 1}. Producto ID: ${item.productoId}\n   - Cantidad: ${item.cantidad}\n   - Precio unitario: S/. ${item.precio}`
         ).join('\n\n') +
-        `\n\n *Subtotal:* S/. ${orden.subtotal}\n *Envío:* S/. ${orden.envio}\n *Total:* S/. ${orden.total}`
+        `\n\n *Total:* S/. ${orden.total}`
       )
 
       window.open(`https://wa.me/${numeroWsp}?text=${mensaje}`, '_blank')
@@ -255,24 +255,8 @@ export default function CheckoutPage() {
           </select>
 
           <input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Dirección" required className="w-full p-3 text-black border rounded" />
-          <select
-            name="referencia"
-            value={form.referencia}
-            onChange={handleChange}
-            required
-            className="w-full p-3 text-black border rounded"
-          >
-            <option value="">Selecciona una Talla</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="Estándar">Estándar</option>
-          </select>
+          <h5 className='text-black'>Indique la talla en la conversación de Whatsapp!!</h5>
 
-          <select name="metodoEnvio" value={form.metodoEnvio} onChange={handleChange} className="w-full p-3 text-black border rounded">
-            <option value="delivery">Delivery</option>
-            <option value="retiro">Retiro en tienda</option>
-          </select>
           <div className="flex items-start space-x-2">
             <input
               type="checkbox"

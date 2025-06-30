@@ -585,7 +585,7 @@ const bgClass = scrolled || hovered || showSearch
         ref={cartRef}
         className={`fixed top-0 right-0 h-full max-w-sm w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ${showCart ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        <div className="flex justify-between items-center p-6 border-b">
+        <div className="flex justify-between items-center p-6 border-b mt-4">
           <h2 className="text-lg font-bold text-black">Tu carrito</h2>
           <button onClick={() => setShowCart(false)} aria-label="Cerrar">
             <FaTimes className="text-black" />

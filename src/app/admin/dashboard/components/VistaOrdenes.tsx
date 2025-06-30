@@ -23,6 +23,7 @@ type OrdenItem = {
 type Producto = {
   id: number;
   nombre: string;
+  precio: number; // <-- Asumo que tienes precio en producto para usarlo
 };
 
 export default function VistaOrdenes() {
@@ -33,6 +34,13 @@ export default function VistaOrdenes() {
   const [ordenItems, setOrdenItems] = useState<OrdenItem[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [ordenSeleccionadaId, setOrdenSeleccionadaId] = useState<number | null>(null);
+
+  const [productoParaAgregar, setProductoParaAgregar] = useState<number | null>(null);
+  const [agregandoProducto, setAgregandoProducto] = useState(false);
+
+  const calcularTotal = (items: OrdenItem[]) => {
+    return items.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -79,7 +87,9 @@ export default function VistaOrdenes() {
       if (!res.ok) throw new Error('Error al actualizar estado');
 
       setOrdenes((prev) =>
-        prev.map((orden) => (orden.id === id ? { ...orden, estado } : orden))
+        prev.map((orden) =>
+          orden.id === editandoId ? { ...orden, estado } : orden
+        )
       );
       setEditandoId(null);
       setOrdenItems([]);
@@ -106,7 +116,13 @@ export default function VistaOrdenes() {
     }
   };
 
+  // Validación: no eliminar último item
   const eliminarItem = async (id: number) => {
+    if (ordenItems.length <= 1) {
+      alert('La orden debe tener al menos un producto, no puedes eliminar este item.');
+      return;
+    }
+
     if (!confirm('¿Deseas eliminar este producto de la orden?')) return;
 
     try {
@@ -116,7 +132,24 @@ export default function VistaOrdenes() {
 
       if (!res.ok) throw new Error('No se pudo eliminar el item');
 
-      setOrdenItems((prev) => prev.filter((item) => item.id !== id));
+      const nuevosItems = ordenItems.filter((item) => item.id !== id);
+      setOrdenItems(nuevosItems);
+
+      // Recalcular y actualizar total
+      const nuevoTotal = calcularTotal(nuevosItems);
+
+      await fetch(`https://sg-studio-backend.onrender.com/ordenes/${editandoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total: nuevoTotal }),
+      });
+
+      setOrdenes((prev) =>
+        prev.map((orden) =>
+          orden.id === editandoId ? { ...orden, total: nuevoTotal } : orden
+        )
+      );
+
     } catch (error) {
       console.error(error);
       alert('Error al eliminar item');
@@ -133,14 +166,81 @@ export default function VistaOrdenes() {
 
       if (!res.ok) throw new Error('No se pudo actualizar el item');
 
-      alert('Item actualizado');
+      // Actualizar total después de guardar el item
+      const nuevoTotal = calcularTotal(ordenItems);
+      await fetch(`https://sg-studio-backend.onrender.com/ordenes/${editandoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total: nuevoTotal }),
+      });
 
+      setOrdenes((prev) =>
+        prev.map((orden) =>
+          orden.id === editandoId ? { ...orden, total: nuevoTotal } : orden
+        )
+      );
+
+      alert('Item actualizado');
       setEditandoId(null);
       setOrdenItems([]);
       setOrdenSeleccionadaId(null);
     } catch (error) {
       console.error(error);
       alert('Error al actualizar item');
+    }
+  };
+
+  // Función para agregar producto nuevo a la orden, con POST a backend para crear item
+  const agregarProducto = async () => {
+    if (productoParaAgregar === null) return alert('Selecciona un producto para agregar');
+
+    // Verificar que no exista ya el producto en la orden
+    if (ordenItems.some(item => item.productoId === productoParaAgregar)) {
+      return alert('Este producto ya está en la orden');
+    }
+
+    const producto = productos.find(p => p.id === productoParaAgregar);
+    if (!producto) return alert('Producto no encontrado');
+
+    try {
+      // Crear item nuevo en backend
+      const res = await fetch('https://sg-studio-backend.onrender.com/orden-items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ordenId: editandoId,
+          productoId: producto.id,
+          cantidad: 1,
+          precio: producto.precio, // asumimos que tienes el precio en producto
+        }),
+      });
+
+      if (!res.ok) throw new Error('No se pudo agregar el producto');
+
+      const nuevoItem: OrdenItem = await res.json();
+
+      const nuevosItems = [...ordenItems, nuevoItem];
+      setOrdenItems(nuevosItems);
+      setAgregandoProducto(false);
+      setProductoParaAgregar(null);
+
+      // Actualizar total en backend y frontend
+      const nuevoTotal = calcularTotal(nuevosItems);
+      await fetch(`https://sg-studio-backend.onrender.com/ordenes/${editandoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ total: nuevoTotal }),
+      });
+
+      setOrdenes((prev) =>
+        prev.map((orden) =>
+          orden.id === editandoId ? { ...orden, total: nuevoTotal } : orden
+        )
+      );
+
+    } catch (error) {
+      console.error(error);
+      alert('Error al agregar producto');
     }
   };
 
@@ -303,6 +403,49 @@ export default function VistaOrdenes() {
           <h3 className="text-xl font-semibold mb-3 text-black">
             Editar Productos de la orden #{editandoId}
           </h3>
+
+          {/* Botón y select para añadir producto */}
+          <div className="mb-4 flex items-center space-x-2">
+            {agregandoProducto ? (
+              <>
+                <select
+                  value={productoParaAgregar ?? ''}
+                  onChange={(e) => setProductoParaAgregar(Number(e.target.value))}
+                  className="border border-black rounded px-2 py-1"
+                >
+                  <option value="">Selecciona un producto</option>
+                  {productos.map((prod) => (
+                    <option key={prod.id} value={prod.id}>
+                      {prod.nombre}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={agregarProducto}
+                  className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white rounded text-xs"
+                >
+                  Agregar
+                </button>
+                <button
+                  onClick={() => {
+                    setAgregandoProducto(false);
+                    setProductoParaAgregar(null);
+                  }}
+                  className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white rounded text-xs"
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setAgregandoProducto(true)}
+                className="px-2 py-1 border border-black text-black hover:bg-black hover:text-white rounded text-xs"
+              >
+                Añadir Producto
+              </button>
+            )}
+          </div>
+
           <table className="min-w-full border border-black text-sm">
             <thead className="bg-black text-white">
               <tr>
