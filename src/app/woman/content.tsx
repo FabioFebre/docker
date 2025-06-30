@@ -87,28 +87,30 @@ export default function WomanContent() {
 
         {categoriasAbiertas && (
           <ul className="space-y-2 mt-3">
-            {categorias.map(cat => {
-              const cantidad = productos.filter(p => p.categoria?.nombre === cat.nombre).length
-              const isChecked = categoriasSeleccionadas.includes(cat.nombre)
-              return (
-                <li key={cat.id}>
-                  <label className="flex justify-between items-center text-sm font-[Montserrat] cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleCategoria(cat.nombre)}
-                        className="accent-black w-4 h-4"
-                      />
-                      <span className={isChecked ? 'text-black font-bold' : 'text-gray-600'}>
-                        {cat.nombre}
-                      </span>
-                    </div>
-                    <span className="text-xs text-gray-400">({cantidad})</span>
-                  </label>
-                </li>
-              )
-            })}
+            {categorias
+          .filter(cat => productos.some(p => p.categoria?.nombre === cat.nombre)) // Solo categorías con productos
+          .map(cat => {
+            const cantidad = productos.filter(p => p.categoria?.nombre === cat.nombre).length
+            const isChecked = categoriasSeleccionadas.includes(cat.nombre)
+            return (
+              <li key={cat.id}>
+                <label className="flex justify-between items-center text-sm font-[Montserrat] cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => toggleCategoria(cat.nombre)}
+                      className="accent-black w-4 h-4"
+                    />
+                    <span className={isChecked ? 'text-black font-bold' : 'text-gray-600'}>
+                      {cat.nombre}
+                    </span>
+                  </div>
+                  <span className="text-xs text-gray-400">({cantidad})</span>
+                </label>
+              </li>
+            )
+          })}
           </ul>
         )}
       </aside>
