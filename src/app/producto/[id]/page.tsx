@@ -188,8 +188,8 @@ export default function ProductoDetalle() {
           )}
 
           {/* CONTENIDO PRINCIPAL */}
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[auto_500px_1fr] gap-6">
-            <div className="flex flex-row md:flex-col gap-3 items-center md:items-start">
+          <div className="max-w-6xl mx-auto flex flex-col lg:grid lg:grid-cols-[auto_500px_1fr] gap-6">
+            <div className="order-1 lg:order-1 flex flex-row lg:flex-col gap-3 items-center lg:items-start">
               {imagen.map((img: string, index: number) => (
                 <button
                   key={index}
@@ -211,7 +211,7 @@ export default function ProductoDetalle() {
             </div>
 
             <div
-              className="relative w-full h-[800px] shadow-md rounded-lg overflow-hidden flex items-center justify-center bg-gray-100"
+              className="order-0 lg:order-2 relative w-full h-[800px] shadow-md rounded-lg overflow-hidden flex items-center justify-center bg-gray-100"
               style={{ cursor: isHovering ? 'zoom-in' : 'default' }}
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsHovering(true)}
@@ -242,9 +242,9 @@ export default function ProductoDetalle() {
               )}
             </div>
 
-            <div className="space-y-4 text-gray-800">
-              <h1 className="font-[Beige] text-6xl mb-1">{nombre}</h1>
-              <p className="font-[Beige] text-2xl">PEN {precio}</p>
+            <div className="order-2 lg:order-3 space-y-4 text-gray-800">
+              <h1 className="font-[Montserrat] text-6xl mb-1">{nombre}</h1>
+              <p className="font-[Montserrat] text-2xl">PEN {precio}</p>
               <hr />
               <h5 className="font-[Montserrat] text-sm">{color}</h5>
 

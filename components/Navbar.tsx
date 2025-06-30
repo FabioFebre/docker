@@ -25,7 +25,7 @@ export default function Navbar() {
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState([])
   const router = useRouter();
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [submenuAbierto, setSubmenuAbierto] = useState(false);
+  const [submenuAbierto, setSubmenuAbierto] = useState<'woman' | 'new' | ''>('');
   const [isHoveringWoman, setIsHoveringWoman] = useState(false); // nuevo
   const [isHoveringNewArrivals, setIsHoveringNewArrivals] = useState(false); // nuevo
 
@@ -53,6 +53,18 @@ export default function Navbar() {
     const term = searchTerm.trim().toLowerCase();
     setSugerencias(term.length < 3 ? [] : allProducts.filter(p => p.nombre.toLowerCase().includes(term)));
   }, [searchTerm, allProducts]);
+
+  useEffect(() => {
+    const handleClickOutsideMenu = (e: MouseEvent) => {
+      const menu = document.querySelector('.menu-lateral'); // vamos a poner una clase a tu div del menú
+      if (menuAbierto && menu && !menu.contains(e.target as Node)) {
+        setMenuAbierto(false);
+        setSubmenuAbierto('');  // <-- agregamos esto
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutsideMenu);
+    return () => document.removeEventListener('mousedown', handleClickOutsideMenu);
+  }, [menuAbierto]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -156,6 +168,11 @@ export default function Navbar() {
       router.push(`/buscar?query=${encodeURIComponent(searchTerm.trim())}`);
       setShowSearch(false);
     }
+  };
+
+  const cerrarMenu = () => {
+    setMenuAbierto(false);
+    setSubmenuAbierto('');
   };
 
   const clearSearch = () => setSearchTerm('');
@@ -277,15 +294,15 @@ export default function Navbar() {
 
         {/* Menú lateral animado y scrollable */}
         <div
-          className={`fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 md:hidden
+          className={`menu-lateral fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-50 transform transition-transform duration-300 md:hidden
             ${menuAbierto ? 'translate-x-0' : '-translate-x-full'}`}
         >
           <div className="h-full flex flex-col">
             {/* Encabezado */}
-            <div className="flex justify-end items-center p-6 border-b">
+            <div className="flex justify-end items-center p-6 border-b border-gray-800">
               <button
-                onClick={() => setMenuAbierto(false)}
-                className="text-xl hover:text-gray-500"
+                onClick={cerrarMenu}
+                className="text-black text-xl hover:text-gray-500"
                 aria-label="Cerrar"
               >
                 <FaTimes />
@@ -297,18 +314,18 @@ export default function Navbar() {
               {/* WOMAN con subcategorías */}
               <div>
                 <button
-                  onClick={() => setSubmenuAbierto(!submenuAbierto)}
+                  onClick={() => setSubmenuAbierto(prev => prev === 'woman' ? '' : 'woman')}
                   className="flex justify-between items-center w-full text-left text-black font-medium text-sm hover:text-gray-700 transition-colors"
                 >
                   WOMAN
                   <span className="ml-2 text-base">
-                    {submenuAbierto ? <FaChevronLeft /> : <FaChevronRight />}
+                    {submenuAbierto === 'woman' ? <FaChevronLeft /> : <FaChevronRight />}
                   </span>
                 </button>
 
                 <ul
-                  className={`mt-2 ml-2 space-y-2 text-sm text-gray-700 transition-all duration-500 ease-out
-                    ${submenuAbierto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
+                  className={`ml-2 text-sm text-gray-700 overflow-hidden transition-all duration-500 ease-out
+                    ${submenuAbierto === 'woman' ? 'max-h-screen opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}
                 >
                   {categorias.map((c, i) => (
                     <li
@@ -318,6 +335,40 @@ export default function Navbar() {
                     >
                       <Link
                         href={`/woman?categoria=${encodeURIComponent(c.nombre)}`}
+                        className="block hover:text-black"
+                        onClick={() => setMenuAbierto(false)}
+                      >
+                        {c.nombre}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* NEW ARRIVALS con subcategorías */}
+              <div>
+                <button
+                  onClick={() => setSubmenuAbierto(prev => prev === 'new' ? '' : 'new')}
+                  className="flex justify-between items-center w-full text-left text-black font-medium text-sm hover:text-gray-700 transition-colors"
+                >
+                  NEW ARRIVALS
+                  <span className="ml-2 text-base">
+                    {submenuAbierto === 'new' ? <FaChevronLeft /> : <FaChevronRight />}
+                  </span>
+                </button>
+
+                <ul
+                  className={`ml-2 text-sm text-gray-700 overflow-hidden transition-all duration-500 ease-out
+                    ${submenuAbierto === 'new' ? 'max-h-screen opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}
+                >
+                  {categoriasSeleccionadas.map((c, i) => (
+                    <li
+                      key={c.id}
+                      className="transition-opacity duration-300"
+                      style={{ transitionDelay: `${i * 40}ms` }}
+                    >
+                      <Link
+                        href={`/newarrivals?categoria=${encodeURIComponent(c.nombre)}`}
                         className="block hover:text-black"
                         onClick={() => setMenuAbierto(false)}
                       >

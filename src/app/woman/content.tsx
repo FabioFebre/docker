@@ -72,16 +72,16 @@ export default function WomanContent() {
   /* Render                                                                   */
   /* ───────────────────────────────────────────────────────────────────────── */
   return (
-    <main className="bg-white min-h-screen p-4 pt-24 flex">
+    <main className="bg-white min-h-screen p-4 pt-24 flex flex-col lg:flex-row">
       {/*  Sidebar  */}
-      <aside className="w-64 pr-6 border-r border-gray-300">
-        <h2 className="font-[Montserrat] text-2xl font-bold mb-4 text-gray-800">Categorías</h2>
+      <aside className="w-full lg:w-64 lg:pr-6 border-b lg:border-b-0 lg:border-r border-gray-300 mb-4 lg:mb-0">
+        <h2 className="font-[Montserrat] text-xl lg:text-2xl font-bold mb-4 text-gray-800">Categorías</h2>
 
         <div
           className="border-t border-b py-2 cursor-pointer flex justify-between items-center"
           onClick={() => setCategoriasAbiertas(!categoriasAbiertas)}
         >
-          <span className="font-semibold text-gray-700">Filtrar por categoría</span>
+          <span className="font-semibold text-gray-700 text-sm lg:text-base">Filtrar por categoría</span>
           <span className="text-lg font-bold">{categoriasAbiertas ? '−' : '+'}</span>
         </div>
 
@@ -115,10 +115,9 @@ export default function WomanContent() {
 
       {/*  Sección principal  */}
       <section className="flex-1 pl-6">
-        {/* Encabezado y botones de vista */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="font-[Montserrat] text-2xl font-bold text-gray-800">PRENDAS</h2>
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 space-y-2 sm:space-y-0">
+          <h2 className="font-[Montserrat] text-xl lg:text-2xl font-bold text-gray-800">PRENDAS</h2>
+          <div className="flex items-center space-x-2">
             {(['grande', 'compacta', 'lista'] as const).map(tipo => (
               <button
                 key={tipo}
@@ -150,19 +149,23 @@ export default function WomanContent() {
         {productosFiltrados.length === 0 ? (
           <p className="text-gray-500">No hay productos que coincidan con los filtros.</p>
         ) : (
-          <div className={`grid ${columnas} gap-6`}>
+          <div className={`grid gap-4 sm:gap-6 ${
+            vista === 'lista' 
+            ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6' 
+            : vista === 'compacta' 
+            ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4' 
+            : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+          }`}>
             {productosFiltrados.map(prod => (
               <Link key={prod.id} href={`/producto/${prod.id}`} className="group block">
                 <div className="bg-white border rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-                  <div className="relative w-full h-72">
+                  <div className="relative w-full h-64 sm:h-72">
                     <Image
                       src={prod.imagen?.[0] || '/placeholder.jpg'}
                       alt={`Imagen principal de ${prod.nombre}`}
                       fill
                       unoptimized
-                      className={`object-cover transition-opacity duration-300 ${
-                        prod.imagen?.[1] ? 'group-hover:opacity-0' : ''
-                      }`}
+                      className={`object-cover transition-opacity duration-300 ${prod.imagen?.[1] ? 'group-hover:opacity-0' : ''}`}
                     />
                     {prod.imagen?.[1] && (
                       <Image
@@ -173,27 +176,18 @@ export default function WomanContent() {
                         className="object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       />
                     )}
-
-                    {/* Badge "New Arrivals" */}
                     {prod.seleccionado && (
                       <div className="absolute top-2 left-2 z-10">
-                        <span className="inline-block bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">
+                        <span className="inline-block bg-black text-white text-xs font-semibold px-2 py-0.5 rounded-full shadow-md uppercase tracking-wider">
                           New Arrivals
                         </span>
                       </div>
                     )}
-
-                    {/* Botón flotante "+" */}
-                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:rotate-90 transform transition-transform duration-300 ease-in-out">
-                        <span className="text-2xl font-bold text-gray-800">+</span>
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="p-4 text-center">
+                  <div className="p-3 sm:p-4 text-center">
                     <p className="text-sm font-medium text-gray-700 truncate">{prod.nombre}</p>
-                    <p className="text-lg font-normal text-black">S/ {prod.precio}</p>
+                    <p className="text-base sm:text-lg font-normal text-black">S/ {prod.precio}</p>
                   </div>
                 </div>
               </Link>
