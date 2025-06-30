@@ -177,21 +177,21 @@ export default function Home() {
                       }}
                     >
                     <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300">
-                      <div className="relative w-full h-150">
+                      <div className="relative w-full h-150 group">
+                      <img
+                        src={imagen[0]}
+                        alt={nombre}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                          imagen[1] ? 'group-hover:opacity-0' : ''
+                        }`}
+                      />
+                      {imagen[1] && (
                         <img
-                          src={imagen[0]}
-                          alt={nombre}
-                          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                            imagen[1] ? 'group-hover:opacity-0' : ''
-                          }`}
+                          src={imagen[1]}
+                          alt={`${nombre} alternativa`}
+                          className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         />
-                        {imagen[1] && (
-                          <img
-                            src={imagen[1]}
-                            alt={`${nombre} alternativa`}
-                            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                          />
-                        )}
+                      )}
                         {seleccionado && (
                           <div className="absolute top-2 left-2 z-10">
                             <span className="inline-block bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">

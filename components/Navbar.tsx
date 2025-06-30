@@ -55,6 +55,28 @@ export default function Navbar() {
   }, [searchTerm, allProducts]);
 
   useEffect(() => {
+    const fetchCategoriasConProductos = async () => {
+      try {
+        const resCat = await fetch('https://sg-studio-backend.onrender.com/categorias');
+        const categoriasData = await resCat.json();
+
+        const resProd = await fetch('https://sg-studio-backend.onrender.com/productos');
+        const productosData: Producto[] = await resProd.json();
+
+        const categoriasConProductos = categoriasData.filter((cat: Categoria) =>
+          productosData.some((prod) => prod.categoria?.id === cat.id)
+        );
+
+        setCategorias(categoriasConProductos.slice(0, 4)); // solo 4
+      } catch (err) {
+        console.error('Error al obtener categorías con productos:', err);
+      }
+    };
+
+    fetchCategoriasConProductos();
+  }, []);
+
+  useEffect(() => {
     const handleClickOutsideMenu = (e: MouseEvent) => {
       const menu = document.querySelector('.menu-lateral'); // vamos a poner una clase a tu div del menú
       if (menuAbierto && menu && !menu.contains(e.target as Node)) {
@@ -112,23 +134,25 @@ export default function Navbar() {
   useEffect(() => {
     const fetchCategoriasSeleccionadas = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados')
-        const data = await res.json()
-
-        const unicas = data
-          .map((p: any) => p.categoria)
-          .filter((cat: any, i: number, self: any[]) =>
-            cat && self.findIndex(c => c.id === cat.id) === i
+        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados');
+        const data: Producto[] = await res.json();
+      
+        const categoriasFiltradas = data
+          .map((p) => p.categoria)
+          .filter((cat, i, self) =>
+            cat && self.findIndex((c) => c.id === cat.id) === i
           )
-
-        setCategoriasSeleccionadas(unicas)
+          .slice(0, 4); // limitar a 4 categorías
+        
+        setCategoriasSeleccionadas(categoriasFiltradas);
       } catch (err) {
-        console.error('Error cargando categorías seleccionadas', err)
+        console.error('Error cargando categorías seleccionadas', err);
       }
-    }
+    };
+  
+    fetchCategoriasSeleccionadas();
+  }, []);
 
-    fetchCategoriasSeleccionadas()
-  }, [])
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
