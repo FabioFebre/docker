@@ -182,7 +182,7 @@ export default function ListarProductosAdmin() {
               <h3 className="text-lg font-semibold text-gray-900 truncate mb-1">
                 {producto.nombre}
               </h3>
-              <p className="text-sm font-bold text-gray-800 mb-2">${producto.precio}</p>
+              <p className="text-sm font-bold text-gray-800 mb-2">S/ {producto.precio}</p>
               <ul className="text-sm text-gray-700 space-y-1 mb-4">
                 {producto.categoria?.nombre && (
                   <li>
