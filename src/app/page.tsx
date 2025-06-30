@@ -8,7 +8,7 @@ import WhatsappBubble from '../../components/WhatsappBubble'
 import SplashScreen from '../../components/SplashScreen'
 import { useRouter } from 'next/navigation'
 
-const slides = ['/images/home2.jpg', '/images/home4.jpg']
+const slides = ['/images/LOGO.jpg', '/images/LOGO.jpg']
 
 function Slideshow({ slides, interval = 5000 }: { slides: string[]; interval?: number }) {
   const [current, setCurrent] = useState(0)
@@ -202,7 +202,7 @@ export default function Home() {
                       </div>
                       <div className="p-4 text-center">
                         <p className="text-gray-700 text-sm font-semibold truncate">{nombre}</p>
-                        <p className="text-black text-base font-bold mt-1">${precio}</p>
+                        <p className="text-black text-base font-bold mt-1">S/ {precio}</p>
                         {/*<p className="text-gray-500 text-xs mt-2 truncate">{descripcion}</p>*/}
                       </div>
                     </div>
