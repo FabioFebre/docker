@@ -46,8 +46,8 @@ export default function VistaOrdenes() {
     async function fetchData() {
       try {
         const [ordenesRes, productosRes] = await Promise.all([
-          fetch('https://sg-studio-backend.onrender.com/ordenes'),
-          fetch('https://sg-studio-backend.onrender.com/productos'),
+          fetch('https://api.sgstudio.shop/ordenes'),
+          fetch('https://api.sgstudio.shop/productos'),
         ]);
 
         const ordenesData = await ordenesRes.json();
@@ -67,7 +67,7 @@ export default function VistaOrdenes() {
 
   const fetchOrdenItems = async (ordenId: number) => {
     try {
-      const res = await fetch('https://sg-studio-backend.onrender.com/orden-items');
+      const res = await fetch('https://api.sgstudio.shop/orden-items');
       const data: OrdenItem[] = await res.json();
       const filtrados = data.filter((item) => item.ordenId === ordenId);
       setOrdenItems(filtrados);
@@ -78,7 +78,7 @@ export default function VistaOrdenes() {
 
   const cambiarEstado = async (id: number, estado: string) => {
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/ordenes/${id}`, {
+      const res = await fetch(`https://api.sgstudio.shop/ordenes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ estado }),
@@ -104,7 +104,7 @@ export default function VistaOrdenes() {
     if (!confirm('¿Deseas eliminar esta orden?')) return;
 
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/ordenes/${id}`, {
+      const res = await fetch(`https://api.sgstudio.shop/ordenes/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Error al eliminar orden');
@@ -126,7 +126,7 @@ export default function VistaOrdenes() {
     if (!confirm('¿Deseas eliminar este producto de la orden?')) return;
 
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/orden-items/${id}`, {
+      const res = await fetch(`https://api.sgstudio.shop/orden-items/${id}`, {
         method: 'DELETE',
       });
 
@@ -138,7 +138,7 @@ export default function VistaOrdenes() {
       // Recalcular y actualizar total
       const nuevoTotal = calcularTotal(nuevosItems);
 
-      await fetch(`https://sg-studio-backend.onrender.com/ordenes/${editandoId}`, {
+      await fetch(`https://api.sgstudio.shop/ordenes/${editandoId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ total: nuevoTotal }),
@@ -158,7 +158,7 @@ export default function VistaOrdenes() {
 
   const guardarItemActualizado = async (item: OrdenItem) => {
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/orden-items/${item.id}`, {
+      const res = await fetch(`api.sgstudio.shop/orden-items/${item.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cantidad: item.cantidad }),
@@ -168,7 +168,7 @@ export default function VistaOrdenes() {
 
       // Actualizar total después de guardar el item
       const nuevoTotal = calcularTotal(ordenItems);
-      await fetch(`https://sg-studio-backend.onrender.com/ordenes/${editandoId}`, {
+      await fetch(`https://api.sgstudio.shop/ordenes/${editandoId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ total: nuevoTotal }),
@@ -204,7 +204,7 @@ export default function VistaOrdenes() {
 
     try {
       // Crear item nuevo en backend
-      const res = await fetch('https://sg-studio-backend.onrender.com/orden-items', {
+      const res = await fetch('https://api.sgstudio.shop/orden-items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -226,7 +226,7 @@ export default function VistaOrdenes() {
 
       // Actualizar total en backend y frontend
       const nuevoTotal = calcularTotal(nuevosItems);
-      await fetch(`https://sg-studio-backend.onrender.com/ordenes/${editandoId}`, {
+      await fetch(`https://api.sgstudio.shop/ordenes/${editandoId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ total: nuevoTotal }),

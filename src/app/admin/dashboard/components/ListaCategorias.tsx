@@ -16,7 +16,7 @@ export default function ListaCategorias() {
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/categorias');
+        const res = await fetch('https://api.sgstudio.shop/categorias');
         const data = await res.json();
         setCategorias(data);
       } catch (err) {
@@ -36,7 +36,7 @@ export default function ListaCategorias() {
 
     try {
       const res = await fetch(
-        `https://sg-studio-backend.onrender.com/categorias/${id}`,
+        `https://api.sgstudio.shop/categorias/${id}`,
         { method: 'DELETE' }
       );
 

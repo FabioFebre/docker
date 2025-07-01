@@ -13,20 +13,20 @@ export default function ResumenDashboard() {
 
 
   useEffect(() => {
-    fetch('https://sg-studio-backend.onrender.com/productos')
+    fetch('https://api.sgstudio.shop/productos')
       .then(res => res.json())
       .then(data => setProductos(data.length));
 
-    fetch('https://sg-studio-backend.onrender.com/categorias')
+    fetch('https://api.sgstudio.shop/categorias')
       .then(res => res.json())
       .then(data => setCategorias(data.length));
 
-    fetch('https://sg-studio-backend.onrender.com/usuarios')
+    fetch('https://api.sgstudio.shop/usuarios')
       .then(res => res.json())
       .then(data => setCantidadUsuarios(data.length))
       .catch(err => console.error('Error al obtener usuarios:', err));
 
-    fetch('https://sg-studio-backend.onrender.com/reclamos')
+    fetch('https://api.sgstudio.shop/reclamos')
       .then(res => res.json())
       .then(data => setCantidadReclamos(data.length))
       .catch(err => console.error('Error al obtener reclamos:', err));

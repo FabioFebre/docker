@@ -25,7 +25,7 @@ export default function RegistroPage() {
     setMensaje('');
 
     try {
-      const response = await fetch('https://sg-studio-backend.onrender.com/usuarios/', {
+      const response = await fetch('https://api.sgstudio.shop/usuarios/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

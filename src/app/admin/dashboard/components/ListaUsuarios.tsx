@@ -21,7 +21,7 @@ export default function ListarUsuarios() {
 
   const obtenerUsuarios = async () => {
     try {
-      const res = await fetch('https://sg-studio-backend.onrender.com/usuarios');
+      const res = await fetch('https://api.sgstudio.shop/usuarios');
       const data = await res.json();
       setUsuarios(data);
     } catch (error) {
@@ -43,7 +43,7 @@ export default function ListarUsuarios() {
 
   const actualizarUsuario = async (usuario: Usuario) => {
     try {
-      await fetch(`https://sg-studio-backend.onrender.com/usuarios/${usuario.id}`, {
+      await fetch(`https://api.sgstudio.shop/usuarios/${usuario.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(usuario),
@@ -58,7 +58,7 @@ export default function ListarUsuarios() {
     if (!confirm('¿Eliminar este usuario?')) return;
 
     try {
-      await fetch(`https://sg-studio-backend.onrender.com/usuarios/${id}`, {
+      await fetch(`https://api.sgstudio.shop/usuarios/${id}`, {
         method: 'DELETE',
       });
       setUsuarios((prev) => prev.filter((u) => u.id !== id));

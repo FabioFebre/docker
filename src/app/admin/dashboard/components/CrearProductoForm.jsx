@@ -22,7 +22,7 @@ export default function CrearProductoForm() {
     // Cargar categorías al montar el componente
     const fetchCategorias = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/categorias');
+        const res = await fetch('https://api.sgstudio.shop/categorias');
         const data = await res.json();
         setCategorias(data);
       } catch (error) {
@@ -54,7 +54,7 @@ export default function CrearProductoForm() {
     imagenes.forEach((img) => formData.append('imagen', img));
 
     try {
-      const res = await fetch('https://sg-studio-backend.onrender.com/productos', {
+      const res = await fetch('https://api.sgstudio.shop/productos', {
         method: 'POST',
         body: formData,
       });

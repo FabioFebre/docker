@@ -59,7 +59,7 @@ export default function EditarProductoForm({ producto, onGuardado, onCancelar })
     });
 
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${producto.id}`, {
+      const res = await fetch(`https://api.sgstudio.shop/productos/${producto.id}`, {
         method: 'PUT',
         body: data,
       });

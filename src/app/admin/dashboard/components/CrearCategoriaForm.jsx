@@ -17,7 +17,7 @@ export default function CrearCategoriaForm({ onCategoriaCreada }) {
     }
 
     try {
-      const res = await fetch('https://sg-studio-backend.onrender.com/categorias', {
+      const res = await fetch('https://api.sgstudio.shop/categorias', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

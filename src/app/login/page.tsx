@@ -14,7 +14,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://sg-studio-backend.onrender.com/usuarios/login', {
+      const response = await fetch('https://api.sgstudio.shop/usuarios/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

@@ -18,7 +18,7 @@ export default function NewArrivalsPage() {
   useEffect(() => {
     const fetchSeleccionados = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados')
+        const res = await fetch('https://api.sgstudio.shop/productos/seleccionados')
         const data = await res.json()
         setProductos(data)
 

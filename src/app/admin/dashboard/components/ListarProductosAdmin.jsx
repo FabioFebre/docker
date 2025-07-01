@@ -20,7 +20,7 @@ export default function ListarProductosAdmin() {
   useEffect(() => {
     async function fetchProductos() {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos');
+        const res = await fetch('https://api.sgstudio.shop/productos');
         if (!res.ok) throw new Error('Error al obtener productos');
         const data = await res.json();
         setProductos(data);
@@ -55,7 +55,7 @@ export default function ListarProductosAdmin() {
     if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
     setEliminando(id);
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${id}`, {
+      const res = await fetch(`https://api.sgstudio.shop/productos/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) throw new Error('Error al eliminar producto');
@@ -106,7 +106,7 @@ export default function ListarProductosAdmin() {
       });
       nuevaImagenes.forEach((file) => formData.append('imagenes', file));
       const res = await fetch(
-        `https://sg-studio-backend.onrender.com/productos/${productoEditando.id}`,
+        `https://api.sgstudio.shop/productos/${productoEditando.id}`,
         { method: 'PUT', body: formData }
       );
       if (!res.ok) throw new Error('Error al guardar el producto');

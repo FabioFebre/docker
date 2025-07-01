@@ -60,7 +60,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
-        const response = await fetch('https://sg-studio-backend.onrender.com/categorias');
+        const response = await fetch('https://api.sgstudio.shop/categorias');
         const data = await response.json();
         setCategorias(data);
       } catch (error) {
@@ -73,7 +73,7 @@ export default function Navbar() {
   useEffect(() => {
     const fetchCategoriasSeleccionadas = async () => {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos/seleccionados');
+        const res = await fetch('https://api.sgstudio.shop/productos/seleccionados');
         const data: Producto[] = await res.json();
       
         const categoriasFiltradas = data
@@ -112,7 +112,7 @@ export default function Navbar() {
       if (isLoggedIn && storedUser) {
         const user = JSON.parse(storedUser);
         try {
-          const response = await fetch(`https://sg-studio-backend.onrender.com/carrito/${user.id}`);
+          const response = await fetch(`https://api.sgstudio.shop/carrito/${user.id}`);
           if (!response.ok) throw new Error('No se pudo obtener el carrito');
           const data = await response.json();
           setCarrito(data.items);
@@ -139,10 +139,10 @@ export default function Navbar() {
   useEffect(() => {
     const fetchCategoriasConProductos = async () => {
       try {
-        const resCat = await fetch('https://sg-studio-backend.onrender.com/categorias');
+        const resCat = await fetch('https://api.sgstudio.shop/categorias');
         const categoriasData = await resCat.json();
 
-        const resProd = await fetch('https://sg-studio-backend.onrender.com/productos');
+        const resProd = await fetch('https://api.sgstudio.shop/productos');
         const productosData: Producto[] = await resProd.json();
 
         const categoriasConProductos = categoriasData.filter((cat: Categoria) =>
@@ -236,7 +236,7 @@ export default function Navbar() {
       try {
         const user = JSON.parse(storedUser);
         const response = await fetch(
-          `https://sg-studio-backend.onrender.com/carritoIitem/${itemId}`,
+          `https://api.sgstudio.shop/carritoIitem/${itemId}`,
           {
             method: 'DELETE',
           }

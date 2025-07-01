@@ -44,13 +44,13 @@ export default function ProductoDetalle() {
     try {
       setLoading(true);
       setIsLoading(true); // para mostrar splash
-      const res = await fetch(`https://sg-studio-backend.onrender.com/productos/${id}`);
+      const res = await fetch(`https://api.sgstudio.shop/productos/${id}`);
       if (!res.ok) throw new Error('Error al obtener el producto');
 
       const data = await res.json();
       const ajustarURL = (url: string) => {
         if (!url.startsWith('http')) {
-          return `https://sg-studio-backend.onrender.com${url.startsWith('/') ? '' : '/'}${url}`;
+          return `https://api.sgstudio.shop${url.startsWith('/') ? '' : '/'}${url}`;
         }
         return url;
       };
@@ -91,7 +91,7 @@ export default function ProductoDetalle() {
   useEffect(() => {
     async function fetchRecomendados() {
       try {
-        const res = await fetch('https://sg-studio-backend.onrender.com/productos');
+        const res = await fetch('https://api.sgstudio.shop/productos');
         if (!res.ok) throw new Error('Error al obtener recomendados');
         const datos = await res.json();
         const otros = datos.filter((p: any) => String(p.id) !== String(idActual));
@@ -124,7 +124,7 @@ export default function ProductoDetalle() {
     }
 
     try {
-      const res = await fetch('https://sg-studio-backend.onrender.com/carrito/add', {
+      const res = await fetch('https://api.sgstudio.shop/carrito/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

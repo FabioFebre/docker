@@ -16,7 +16,7 @@ export default function ListarReclamos() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://sg-studio-backend.onrender.com/reclamos')
+    fetch('https://api.sgstudio.shop/reclamos')
       .then((res) => res.json())
       .then((data) => setReclamos(data))
       .catch((err) => {
@@ -31,7 +31,7 @@ export default function ListarReclamos() {
     if (!confirmar) return;
 
     try {
-      const res = await fetch(`https://sg-studio-backend.onrender.com/reclamos/${id}`, {
+      const res = await fetch(`https://api.sgstudio.shop/reclamos/${id}`, {
         method: 'DELETE',
       });
 

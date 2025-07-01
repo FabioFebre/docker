@@ -22,8 +22,8 @@ export default function WomanContent() {
     const fetchData = async () => {
       try {
         const [resProd, resCat] = await Promise.all([
-          fetch('https://sg-studio-backend.onrender.com/productos'),
-          fetch('https://sg-studio-backend.onrender.com/categorias'),
+          fetch('https://api.sgstudio.shop/productos'),
+          fetch('https://api.sgstudio.shop/categorias'),
         ])
         setProductos(await resProd.json())
         setCategorias(await resCat.json())
