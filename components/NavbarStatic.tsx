@@ -196,7 +196,8 @@ export default function Navbar() {
 
   const handleUserClick = () => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const role = localStorage.getItem('role');
+    const role = localStorage.getItem('role')?.toLowerCase();
+    
     if (isLoggedIn === 'true') {
       if (role === 'admin') {
         router.push('/admin/dashboard');
