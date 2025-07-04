@@ -8,9 +8,9 @@ export default function CrearProductoForm() {
   const [precio, setPrecio] = useState('');
   const [categoriaId, setCategoriaId] = useState('');
   const [categorias, setCategorias] = useState([]);
-  const [imagen, setImagen] = useState(null);
   const [imagenes, setImagenes] = useState([]);
-  const [mensaje, setMensaje] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [mensaje, setMensaje] = useState('');
   const [color, setColor] = useState('');
   const [talla, setTalla] = useState('');
   const [cantidad, setCantidad] = useState('');
@@ -19,7 +19,6 @@ export default function CrearProductoForm() {
   const [cuidados, setCuidados] = useState('');
 
   useEffect(() => {
-    // Cargar categorías al montar el componente
     const fetchCategorias = async () => {
       try {
         const res = await fetch('https://api.sgstudio.shop/categorias');
@@ -31,6 +30,20 @@ export default function CrearProductoForm() {
     };
     fetchCategorias();
   }, []);
+
+  useEffect(() => {
+    if (!imagenes || imagenes.length === 0) {
+      setPreviews([]);
+      return;
+    }
+
+    const newPreviews = imagenes.map((img) => URL.createObjectURL(img));
+    setPreviews(newPreviews);
+
+    return () => {
+      newPreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [imagenes]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,7 +89,8 @@ export default function CrearProductoForm() {
       setComposicion('');
       setInfo('');
       setCuidados('');
-      setImagen(null);
+      setImagenes([]);
+      setPreviews([]);
     } catch (error) {
       setMensaje('Error al conectar con el servidor');
       console.error(error);
@@ -163,7 +177,7 @@ export default function CrearProductoForm() {
           />
         </div>
 
-        {/* Campos que abarcan todo el ancho */}
+        {/* Campos globales */}
         <div className="md:col-span-2 space-y-4">
           <input
             type="number"
@@ -196,6 +210,19 @@ export default function CrearProductoForm() {
             onChange={(e) => setImagenes(Array.from(e.target.files))}
             className="w-full text-sm text-gray-700"
           />
+
+          {previews.length > 0 && (
+            <div className="flex flex-wrap gap-4 mt-2">
+              {previews.map((src, idx) => (
+                <img
+                  key={idx}
+                  src={src}
+                  alt={`preview-${idx}`}
+                  className="w-32 h-32 object-cover border border-gray-300 rounded"
+                />
+              ))}
+            </div>
+          )}
 
           <button
             type="submit"

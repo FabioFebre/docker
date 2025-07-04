@@ -136,6 +136,8 @@ export default function Navbar() {
       localStorage.setItem('carrito', JSON.stringify(carrito));
     }
   }, [carrito]);
+
+  
   useEffect(() => {
     const fetchCategoriasConProductos = async () => {
       try {
