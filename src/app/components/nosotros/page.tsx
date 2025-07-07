@@ -9,13 +9,13 @@ const Nosotros = () => {
         {/* Galería de imágenes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <img
-            src="/images/sg1.jpg"
+            src="/images/Nosotros1.jpg"
             alt="Foto de la tienda"
             className="w-full h-80 object-cover rounded-lg shadow-md"
           />
 
           <img
-            src="/images/sg2.jpg" 
+            src="/images/Nosotros2.jpg" 
             alt="Foto de la tienda 2"
             className="w-full h-80 object-cover rounded-lg shadow-md"
           />

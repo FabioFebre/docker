@@ -230,15 +230,16 @@ export default function Home() {
                 <picture>
                   <source
                     media="(max-width: 699px)"
-                    srcSet="//www.luvaro.com/cdn/shop/files/bannercel_tiendal_1.jpg?v=1748283912&width=800"
+                    srcSet="/images/_DSC7353.jpg"
                   />
                   <img
-                    src="//www.luvaro.com/cdn/shop/files/BANNER_tienda1.jpg?v=1748282952&width=1800"
+                    src="/images/_DSC7353.jpg"
                     alt="Visítanos en nuestras tiendas"
                     className="w-full h-full object-cover"
                     loading="eager"
                   />
                 </picture>
+
                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-center">
                   <h2 className="text-2xl md:text-4xl font-bold drop-shadow-lg">
                     Visítanos en nuestras tiendas
