@@ -22,8 +22,10 @@ export default function ProductoDetalle() {
   const [isHovering, setIsHovering] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [mostrarCuidado, setMostrarCuidado] = useState(false);
+  const [mostrarDescripcion, setMostrarDescripcion] = useState(false);
+  const [mostrarComposicion, setMostrarComposicion] = useState(false);
 
-  // Para el splash con fadeOut
   const [isLoading, setIsLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
 
@@ -43,7 +45,7 @@ export default function ProductoDetalle() {
   const fetchProducto = async (id: string | number) => {
     try {
       setLoading(true);
-      setIsLoading(true); // para mostrar splash
+      setIsLoading(true);
       const res = await fetch(`https://api.sgstudio.shop/productos/${id}`);
       if (!res.ok) throw new Error('Error al obtener el producto');
 
@@ -68,26 +70,23 @@ export default function ProductoDetalle() {
       setProducto(null);
     } finally {
       setLoading(false);
-      setIsLoading(false); // inicio fade out splash
+      setIsLoading(false);
     }
   };
 
-  // Manejo del fade-out splash
   useEffect(() => {
     if (!isLoading) {
-      const timer = setTimeout(() => setShowSplash(false), 500); // Duración fade-out
+      const timer = setTimeout(() => setShowSplash(false), 500);
       return () => clearTimeout(timer);
     } else {
       setShowSplash(true);
     }
   }, [isLoading]);
 
-  // Carga producto cuando cambia idActual
   useEffect(() => {
     if (idActual) fetchProducto(idActual);
   }, [idActual]);
 
-  // Carga productos recomendados cuando termina loading principal
   useEffect(() => {
     async function fetchRecomendados() {
       try {
@@ -142,10 +141,7 @@ export default function ProductoDetalle() {
       }
 
       mostrarToast('Producto agregado al carrito');
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      setTimeout(() => window.location.reload(), 1500);
     } catch (err) {
       console.error(err);
       mostrarToast('Hubo un error al agregar al carrito');
@@ -156,7 +152,6 @@ export default function ProductoDetalle() {
 
   return (
     <>
-      {/* Splash overlay */}
       {showSplash && (
         <div
           className={`fixed inset-0 z-50 bg-white flex items-center justify-center transition-opacity duration-500 ${
@@ -167,9 +162,7 @@ export default function ProductoDetalle() {
         </div>
       )}
 
-      {!isLoading && error && (
-        <p className="p-12 text-center text-red-600">{error}</p>
-      )}
+      {!isLoading && error && <p className="p-12 text-center text-red-600">{error}</p>}
 
       {!isLoading && !error && !producto && (
         <p className="p-12 text-center">Producto no encontrado</p>
@@ -177,7 +170,6 @@ export default function ProductoDetalle() {
 
       {!isLoading && producto && (
         <div className="bg-white min-h-screen px-6 md:px-12 pt-24 md:pt-32 pb-12">
-          {/* Toast */}
           {showToast && (
             <div className="fixed top-15 right-6 z-50 bg-black text-white px-6 py-3 rounded shadow-lg animate-fade-in-out transition-all">
               <p className="text-sm">{toastMessage}</p>
@@ -187,7 +179,6 @@ export default function ProductoDetalle() {
             </div>
           )}
 
-          {/* CONTENIDO PRINCIPAL */}
           <div className="max-w-6xl mx-auto flex flex-col lg:grid lg:grid-cols-[auto_500px_1fr] gap-6">
             <div className="order-1 lg:order-1 flex flex-row lg:flex-col gap-3 items-center lg:items-start">
               {imagen.map((img: string, index: number) => (
@@ -281,10 +272,84 @@ export default function ProductoDetalle() {
                 disabled={producto.cantidad === 0}
               >
                 Agregar al carrito
-              </button>
-            </div>
+              </button> 
+              {/* DESCRIPCIÓN */}
+                <div className="border-t pt-4">
+                  <button
+                    onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
+                    className="flex items-center justify-between w-full text-left text-black font-medium text-lg hover:underline"
+                  >
+                    Descripción
+                    <span className="text-xl">{mostrarDescripcion ? '▲' : '▼'}</span>
+                  </button>
+
+                  {mostrarDescripcion && (
+                    <div className="mt-2 text-gray-700 text-sm leading-relaxed space-y-4">
+                      {/* Descripción */}
+                      <div>
+                        <p className="font-[Montserrat]">
+                          {producto.descripcion || 'Descripción no disponible para este producto.'}
+                        </p>
+                      </div>
+                  
+                      {/* Información */}
+                      <div>
+                        <p className="font-[Montserrat]">
+                          {producto.info || 'Información no disponible para este producto.'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                 </div>
+                <div className="border-t pt-4">
+                  <button
+                    onClick={() => setMostrarComposicion(!mostrarComposicion)}
+                    className="flex items-center justify-between w-full text-left text-black font-medium text-lg hover:underline"
+                  >
+                    Composición
+                    <span className="text-xl">{mostrarComposicion ? '▲' : '▼'}</span>
+                  </button>
+
+                  {mostrarComposicion && (
+                    <div className="mt-2 text-gray-700 text-sm leading-relaxed">
+                      <p className="font-[Montserrat]">
+                        {producto.composicion || 'Composición no disponible para este producto.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {/* Cuidado */}
+                <div className="border-t pt-4">
+                  <button
+                    onClick={() => setMostrarCuidado(!mostrarCuidado)}
+                    className="flex items-center justify-between w-full text-left text-black font-medium text-lg hover:underline"
+                  >
+                    Cuidado del producto
+                    <span className="text-xl">{mostrarCuidado ? '▲' : '▼'}</span>
+                  </button>
+
+                  {mostrarCuidado && (
+                    <div className="mt-2 text-gray-700 text-sm leading-relaxed">
+                      <p className="font-[Montserrat] whitespace-pre-line">
+                        {producto.cuidados
+                          ? producto.cuidados
+                              .split(' - ')
+                              .filter((item) => item.trim() !== '')
+                              .map((linea, index) => (
+                                <span key={index}>
+                                  {linea.trim()}
+                                  <br />
+                                </span>
+                              ))
+                          : 'No se especificaron cuidados para este producto.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
           </div>
 
+          {/* Recomendaciones */}
           <div className="max-w-6xl mx-auto mt-16">
             <h5 className="text-2xl mb-4 text-black">Te puede interesar</h5>
             {loadingRec ? (
@@ -311,7 +376,6 @@ export default function ProductoDetalle() {
                           className="rounded"
                         />
                       )}
-
                       {item.seleccionado && (
                         <div className="absolute top-2 left-2 z-10">
                           <span className="bg-black text-white text-xs font-semibold px-3 py-1 rounded-full shadow uppercase tracking-wider">
