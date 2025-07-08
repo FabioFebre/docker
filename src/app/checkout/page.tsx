@@ -140,6 +140,7 @@ export default function CheckoutPage() {
       cuponCodigo: null,
       items: carrito.items.map((item: any) => ({
         productoId: item.producto.id,
+        nombreProducto: item.producto.nombre,
         cantidad: item.cantidad,
         precio: item.producto.precio
       }))
@@ -149,14 +150,14 @@ export default function CheckoutPage() {
       await axios.post('https://api.sgstudio.shop/ordenes', orden)
       mostrarToast('¡Gracias por tu compra! 🛍️')
 
-      const numeroWsp = '51913537327'
+      const numeroWsp = '51953506401'
       const mensaje = encodeURIComponent(
-        ` *NUEVA ORDEN SG STUDIO* 🛍️\n\n` +
+        ` *NUEVA ORDEN SG STUDIO* \n\n` +
         ` *Cliente:* ${orden.nombre} ${orden.apellido}\n *Email:* ${orden.email}\n *Teléfono:* ${orden.telefono}\n\n` +
         ` *Envío a:* ${orden.direccion}, ${orden.distrito}, ${orden.provincia}, ${orden.departamento}, ${orden.pais}\n\n` +
         ` *Productos:*\n` +
         orden.items.map((item: any, i: number) =>
-          `${i + 1}. Producto ID: ${item.productoId}\n   - Cantidad: ${item.cantidad}\n   - Precio unitario: S/. ${item.precio}`
+          `${i + 1}. Producto: ${item.nombreProducto}\n    - Cantidad: ${item.cantidad}\n   - Precio unitario: S/. ${item.precio}`
         ).join('\n\n') +
         `\n\n *Total:* S/. ${orden.total}`
       )
