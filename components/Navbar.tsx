@@ -67,7 +67,7 @@ export default function Navbar() {
           productosData.some((prod) => prod.categoria?.id === cat.id)
         );
 
-        setCategorias(categoriasConProductos.slice(0, 4)); // solo 4
+        setCategorias(categoriasConProductos.slice(0, 10)); // solo 4
       } catch (err) {
         console.error('Error al obtener categorías con productos:', err);
       }
