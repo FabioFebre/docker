@@ -10,11 +10,11 @@ type FAQ = {
 const faqs: FAQ[] = [
   {
     question: '¿Cuál es el horario de atención?',
-    answer: 'Nuestro horario de atención es de lunes a sábado, de 9:00 a.m. a 7:00 p.m.',
+    answer: 'Nuestro horario de atención es:\n• Lunes a sábado: 9:00 am a 08:30 pm\n• Domingo: 1:00 pm a 6:30 pm',
   },
   {
     question: '¿Hacen envíos a todo el país?',
-    answer: 'Sí, realizamos envíos a todo el país a través de servicios de mensajería confiables.',
+    answer: 'Sí, realizamos envíos a todo el país a través de Olva Courier.',
   },
   {
     question: '¿Qué formas de pago aceptan?',
@@ -22,7 +22,19 @@ const faqs: FAQ[] = [
   },
   {
     question: '¿Puedo cambiar o devolver un producto?',
-    answer: 'Sí, puedes solicitar cambios o devoluciones dentro de los 7 días posteriores a la compra, presentando el comprobante.',
+    answer: `Querida sg lover, tu satisfacción es nuestra prioridad, por ello puedes solicitar un cambio de producto siempre que:\n
+    • este no haya sido utilizado, lavado o esté en su empaque original con todas las etiquetas intactas tal cual lo recibiste.\n
+    • no tenga marcas sucias o de maquillaje.\n
+    • no tenga olor a perfume, desodorante, cosméticos u olor a lavado.\n
+    Revisaremos todos los artículos al recibirlos. cualquier producto que no cumpla con las condiciones anteriores será devuelto al cliente.\n
+    En caso de notar que el producto ha sido manipulado, no se podrá realizar el cambio. no aceptamos productos que no estén en las condiciones originales de venta.\n
+    Además, el costo del delivery de cambio es responsabilidad del cliente.\n
+    Para solicitar un cambio, deberás escribirnos por whatsapp o enviar un correo a sgstudio1606@gmail.com dentro de las 36 horas posteriores a la recepción de tu pedido.\n
+    Por favor incluye: tus datos personales, dni, correo electrónico, celular, número de pedido, motivo del cambio y el nuevo producto que quisieras.\n
+    Una vez recibido tu mensaje, nos contactaremos contigo y te enviaremos la dirección a la cual deberás enviar el producto. el cambio se realizará al precio vigente del producto.\n
+    Finalmente, no realizamos devoluciones de dinero. si deseas cambiar un producto, puedes solicitar una giftcard (tarjeta de regalo) para usar en una nueva compra. esta no tiene fecha de caducidad.\n
+    *no se aceptan cambios de productos en oferta.*
+    \n`,
   },
 ]
 
@@ -48,7 +60,7 @@ export default function FAQPage() {
                 <span>{openIndex === index ? '−' : '+'}</span>
               </button>
               {openIndex === index && (
-                <div className="px-6 pb-4 text-gray-600">
+                <div className="px-6 pb-4 text-gray-600 whitespace-pre-line">
                   {faq.answer}
                 </div>
               )}
