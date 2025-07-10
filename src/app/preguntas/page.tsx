@@ -33,7 +33,7 @@ const faqs: FAQ[] = [
     Por favor incluye: tus datos personales, dni, correo electrónico, celular, número de pedido, motivo del cambio y el nuevo producto que quisieras.\n
     Una vez recibido tu mensaje, nos contactaremos contigo y te enviaremos la dirección a la cual deberás enviar el producto. el cambio se realizará al precio vigente del producto.\n
     Finalmente, no realizamos devoluciones de dinero. si deseas cambiar un producto, puedes solicitar una giftcard (tarjeta de regalo) para usar en una nueva compra. esta no tiene fecha de caducidad.\n
-    *no se aceptan cambios de productos en oferta.*
+    **No se aceptan cambios de productos en oferta.**
     \n`,
   },
 ]
