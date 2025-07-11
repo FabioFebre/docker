@@ -65,7 +65,7 @@ const WhatsappBubble = () => {
             />
             <div className={styles.popupContactInfo}>
               <span className={styles.contactName}>Atención al cliente</span>
-              <span className={styles.contactNumber}>+51 953 506 401</span>
+              <span className={styles.contactNumber}>+51 944 105 915</span>
             </div>
           </a>
         </div>

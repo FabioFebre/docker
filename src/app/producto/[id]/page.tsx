@@ -148,7 +148,7 @@ export default function ProductoDetalle() {
     }
   };
 
-  const { nombre, precio, imagen = [], color } = producto || {};
+  const { nombre, precio, imagen = [], color, talla } = producto || {};
 
   return (
     <>
@@ -238,6 +238,8 @@ export default function ProductoDetalle() {
               <p className="font-[Montserrat] text-2xl">PEN {precio}</p>
               <hr />
               <h5 className="font-[Montserrat] text-sm">{color}</h5>
+              <h5 className="font-[Montserrat] text-sm">Tallas disponibles {talla}</h5>
+
 
               <div className="mb-4">
                 <label className="block text-sm font-[Montserrat] mb-1">Cantidad:</label>

@@ -256,7 +256,8 @@ export default function CheckoutPage() {
           </select>
 
           <input name="direccion" value={form.direccion} onChange={handleChange} placeholder="Dirección" required className="w-full p-3 text-black border rounded" />
-          <h5 className='text-black'>Indique la talla en la conversación de Whatsapp!!</h5>
+          <h5 className='text-black'>Indique la talla y el color en la conversación de Whatsapp</h5>
+          <h5 className='text-black'>El coste de envio se acordara deacuerdo a la zona</h5>
 
           <div className="flex items-start space-x-2">
             <input
