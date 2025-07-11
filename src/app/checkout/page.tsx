@@ -150,7 +150,7 @@ export default function CheckoutPage() {
       await axios.post('https://api.sgstudio.shop/ordenes', orden)
       mostrarToast('¡Gracias por tu compra! 🛍️')
 
-      const numeroWsp = '51953506401'
+      const numeroWsp = '51944105915'
       const mensaje = encodeURIComponent(
         ` *NUEVA ORDEN SG STUDIO* \n\n` +
         ` *Cliente:* ${orden.nombre} ${orden.apellido}\n *Email:* ${orden.email}\n *Teléfono:* ${orden.telefono}\n\n` +
@@ -312,8 +312,7 @@ export default function CheckoutPage() {
 
           {carrito?.items?.length > 0 && (
             <div className="mt-4 text-right">
-              <p className="text-lg text-black font-semibold">Total: S/. {carrito.items.reduce((total: number, item: any) => total + item.cantidad * item.producto.precio, 0) + 10}</p>
-              <p className="text-sm text-gray-500">Incluye envío: S/. 10</p>
+              <p className="text-lg text-black font-semibold">Total: S/. {carrito.items.reduce((total: number, item: any) => total + item.cantidad * item.producto.precio, 0) }</p>
             </div>
           )}
         </div>

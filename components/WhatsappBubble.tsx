@@ -53,7 +53,7 @@ const WhatsappBubble = () => {
         </div>
         <div className={styles.popupBottom}>
           <a
-            href="https://wa.me/51953506401?text=Hola%20me%20gustaría%20más%20información"
+            href="https://wa.me/51944105915?text=Hola%20me%20gustaría%20más%20información"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.popupContact}
