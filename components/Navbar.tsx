@@ -54,27 +54,36 @@ export default function Navbar() {
     setSugerencias(term.length < 3 ? [] : allProducts.filter(p => p.nombre.toLowerCase().includes(term)));
   }, [searchTerm, allProducts]);
 
-  useEffect(() => {
-    const fetchCategoriasConProductos = async () => {
-      try {
-        const resCat = await fetch('https://api.sgstudio.shop/categorias');
-        const categoriasData = await resCat.json();
+ useEffect(() => {
+  const fetchCategoriasConProductos = async () => {
+    try {
+      // Obtener categorías
+      const resCat = await fetch('https://api.sgstudio.shop/categorias');
+      const categoriasDataRaw = await resCat.json();
 
-        const resProd = await fetch('https://api.sgstudio.shop/productos');
-        const productosData: Producto[] = await resProd.json();
+      // Asegurarse de que sea array
+      const categoriasData = Array.isArray(categoriasDataRaw) ? categoriasDataRaw : [];
 
-        const categoriasConProductos = categoriasData.filter((cat: Categoria) =>
-          productosData.some((prod) => prod.categoria?.id === cat.id)
-        );
+      // Obtener productos
+      const resProd = await fetch('https://api.sgstudio.shop/productos');
+      const productosDataRaw = await resProd.json();
+      const productosData: Producto[] = Array.isArray(productosDataRaw) ? productosDataRaw : [];
 
-        setCategorias(categoriasConProductos.slice(0, 10)); // solo 4
-      } catch (err) {
-        console.error('Error al obtener categorías con productos:', err);
-      }
-    };
+      // Filtrar categorías que tengan al menos un producto
+      const categoriasConProductos = categoriasData.filter((cat: Categoria) =>
+        productosData.some((prod) => prod.categoria?.id === cat.id)
+      );
 
-    fetchCategoriasConProductos();
-  }, []);
+      // Guardar máximo 10 categorías
+      setCategorias(categoriasConProductos.slice(0, 10));
+    } catch (err) {
+      console.error('Error al obtener categorías con productos:', err);
+    }
+  };
+
+  fetchCategoriasConProductos();
+}, []);
+
 
   useEffect(() => {
     const handleClickOutsideMenu = (e: MouseEvent) => {
@@ -132,26 +141,30 @@ export default function Navbar() {
 
 
   useEffect(() => {
-    const fetchCategoriasSeleccionadas = async () => {
-      try {
-        const res = await fetch('https://api.sgstudio.shop/productos/seleccionados');
-        const data: Producto[] = await res.json();
+  const fetchCategoriasSeleccionadas = async () => {
+    try {
+      const res = await fetch('https://api.sgstudio.shop/productos/seleccionados');
+      const data: Producto[] | any = await res.json();
+
+      // Asegurarse que sea array
+      const productosArray = Array.isArray(data) ? data : data?.productos || [];
+
+      const categoriasFiltradas = productosArray
+        .map((p) => p.categoria)
+        .filter((cat, i, self) =>
+          cat && self.findIndex((c) => c.id === cat.id) === i
+        )
+        .slice(0, 4); // limitar a 4 categorías
       
-        const categoriasFiltradas = data
-          .map((p) => p.categoria)
-          .filter((cat, i, self) =>
-            cat && self.findIndex((c) => c.id === cat.id) === i
-          )
-          .slice(0, 4); // limitar a 4 categorías
-        
-        setCategoriasSeleccionadas(categoriasFiltradas);
-      } catch (err) {
-        console.error('Error cargando categorías seleccionadas', err);
-      }
-    };
-  
-    fetchCategoriasSeleccionadas();
-  }, []);
+      setCategoriasSeleccionadas(categoriasFiltradas);
+    } catch (err) {
+      console.error('Error cargando categorías seleccionadas', err);
+    }
+  };
+
+  fetchCategoriasSeleccionadas();
+}, []);
+
 
 
   useEffect(() => {
@@ -351,7 +364,7 @@ export default function Navbar() {
                   className={`ml-2 text-sm text-gray-700 overflow-hidden transition-all duration-500 ease-out
                     ${submenuAbierto === 'woman' ? 'max-h-screen opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'}`}
                 >
-                  {categorias.map((c, i) => (
+                  {Array.isArray(categorias) && categorias.map((c, i) => (
                     <li
                       key={c.id}
                       className="transition-opacity duration-300"
@@ -366,6 +379,7 @@ export default function Navbar() {
                       </Link>
                     </li>
                   ))}
+
                 </ul>
               </div>
 

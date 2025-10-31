@@ -120,8 +120,12 @@ export default function CrearProductoForm() {
             onChange={(e) => setDescripcion(e.target.value)}
             placeholder="Descripción"
             rows={3}
+            maxLength={255} 
             className="w-full px-4 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
+          <p className="text-sm text-gray-500 mt-1 text-right">
+            {descripcion.length}/255 caracteres
+          </p>
 
           <textarea
             value={composicion}
