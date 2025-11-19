@@ -7,7 +7,7 @@ type Usuario = {
   nombre: string;
   apellido: string;
   email: string;
-  rol: 'admin' | 'user';
+  rol: 'admin' | 'user' | 'employee';
 };
 
 export default function ListarUsuarios() {
@@ -35,7 +35,7 @@ export default function ListarUsuarios() {
     e: React.ChangeEvent<HTMLSelectElement>,
     id: number
   ) => {
-    const value = e.target.value as 'admin' | 'user';
+    const value = e.target.value as 'admin' | 'user' | 'employee';
     setUsuarios((prev) =>
       prev.map((u) => (u.id === id ? { ...u, rol: value } : u))
     );
@@ -103,6 +103,7 @@ export default function ListarUsuarios() {
                     >
                       <option value="admin">admin</option>
                       <option value="user">user</option>
+                      <option value="employee">employee</option>
                     </select>
                   ) : (
                     u.rol

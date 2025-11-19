@@ -115,20 +115,21 @@ export default function Navbar() {
           const response = await fetch(`https://api.sgstudio.shop/carrito/${user.id}`);
           if (!response.ok) throw new Error('No se pudo obtener el carrito');
           const data = await response.json();
-          setCarrito(data.items);
+
+          setCarrito(Array.isArray(data.items) ? data.items : []);
         } catch (error) {
           console.error('Error al obtener carrito del backend:', error);
+          setCarrito([]); 
         }
       } else {
         const savedCart = localStorage.getItem('carrito');
-        if (savedCart) {
-          setCarrito(JSON.parse(savedCart));
-        }
+        setCarrito(savedCart ? JSON.parse(savedCart) : []);
       }
     };
 
     fetchCarrito();
   }, []);
+
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -239,7 +240,7 @@ export default function Navbar() {
       try {
         const user = JSON.parse(storedUser);
         const response = await fetch(
-          `https://api.sgstudio.shop/carritoIitem/${itemId}`,
+          `https://api.sgstudio.shop/carritoItem/${itemId}`,
           {
             method: 'DELETE',
           }

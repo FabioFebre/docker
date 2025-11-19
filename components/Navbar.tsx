@@ -225,7 +225,7 @@ export default function Navbar() {
 
   const removeItem = async (itemId: number) => {
     try {
-      const res = await fetch(`https://api.sgstudio.shop/carritoIitem/${itemId}`, {
+      const res = await fetch(`https://api.sgstudio.shop/carritoItem/${itemId}`, {
         method: 'DELETE',
       });
 

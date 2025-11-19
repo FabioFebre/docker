@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const router = useRouter();
 
@@ -29,17 +31,16 @@ export default function LoginPage() {
 
         setMensaje('');
 
-      if (data.usuario.rol === 'admin') {
-        router.push('/admin/dashboard');
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
-      } else {
-        router.push('/');
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
-      }
+        if (data.usuario.rol === "admin") {
+          router.push("/admin/dashboard");
+        } else if (data.usuario.rol === "employee") {
+          router.push("/employee/dashboard");
+        } else {
+          router.push("/");
+        }
+
+        router.refresh();
+
       } else {
         setMensaje(data.error || 'Correo o contraseña incorrectos');
       }
@@ -70,25 +71,28 @@ export default function LoginPage() {
             />
           </div>
 
-          <div>
+          <div className="relative w-full">
             <label className="block text-sm text-black mb-1" htmlFor="password">
               Contraseña
             </label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
-              className="font-[Montserrat] w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black"
+              className="font-[Montserrat] w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black text-black pr-10" // pr-10 deja espacio para el icono
               placeholder="********"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3  top-[70%] transform -translate-y-1/2 text-gray-600 cursor-pointer hover:text-black"
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
 
-          <button
-            type="submit"
-            className="w-full btn-animated"
-          >
+          <button type="submit" className="w-full btn-animated">
             Iniciar sesión
           </button>
         </form>
@@ -98,6 +102,7 @@ export default function LoginPage() {
             {mensaje}
           </div>
         )}
+
         <p className="mt-6 text-center text-sm text-gray-600">
           ¿No tienes una cuenta?{' '}
           <Link href="/registro" className="text-black font-medium hover:underline">
@@ -108,4 +113,3 @@ export default function LoginPage() {
     </main>
   );
 }
-  
